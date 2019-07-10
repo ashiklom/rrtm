@@ -1,0 +1,21 @@
+Package: rrtm
+Title: Implementations of radiative transfer models in R
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Alexey",
+           family = "Shiklomanov",
+           role = c("aut", "cre"),
+           email = "alexey.shiklomanov@gmail.com")
+Description: Implements common leaf, canopy, and atmospheric radiative transfer models in R.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.1.1
+LinkingTo: 
+    Rcpp
+Imports: 
+    gsl,
+    Rcpp
+Suggests: 
+    testthat
