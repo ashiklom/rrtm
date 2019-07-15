@@ -17,7 +17,9 @@ prospect4 <- function(N, Cab, Cw, Cm,
                       kmat = dataspec_p4,
                       refractive = refractive_p45) {
   stopifnot(NCOL(kmat) == 3)
-  k <-  kmat %*% c(Cab, Cw, Cm) / N
+  # TODO: Broadcast division
+  cc <- rbind(Cab, Cw, Cm) / N
+  k <-  kmat %*% cc 
   gpm(k, refractive, N)
 }
 
@@ -27,7 +29,8 @@ prospect5 <- function(N, Cab, Car, Cw, Cm, Cbrown = 0,
                       kmat = dataspec_p5,
                       refractive = refractive_p45) {
   stopifnot(NCOL(kmat) == 5)
-  k <-  kmat %*% c(Cab, Car, Cbrown, Cw, Cm) / N
+  cc <- rbind(Cab, Car, Cbrown, Cw, Cm) / N
+  k <-  kmat %*% cc
   gpm(k, refractive, N)
 }
 
@@ -37,7 +40,8 @@ prospectd <- function(N, Cab, Car, Canth, Cbrown, Cw, Cm,
                       kmat = dataspec_pd,
                       refractive = refractive_pd) {
   stopifnot(NCOL(kmat) == 6)
-  k <-  kmat %*% c(Cab, Car, Canth, Cbrown, Cw, Cm) / N
+  cc <- rbind(Cab, Car, Canth, Cbrown, Cw, Cm) / N
+  k <-  kmat %*% cc
   gpm(k, refractive, N)
 }
 
@@ -59,7 +63,7 @@ gpm <- function(k, refractive, N) {
   # global transmittance
   gt0 <- k > 0
   k0 <- k[gt0]
-  trans <- rep(1.0, length(k))
+  trans <- matrix(1.0, nrow(k), ncol(k))
   trans[gt0] <- (1 - k) * exp(-k0) + k0 ^ 2 * gsl::expint_E1(k0)
 
   # Reflectance/transmittance of a single layer
@@ -99,7 +103,8 @@ gpm <- function(k, refractive, N) {
   denomy <- 1 - Rsub * r
   RN <- Ra + Ta * Rsub * t / denomy
   TN <- Ta * Tsub / denomy
-  cbind(reflectance = RN, transmittance = TN)
+
+  rray::rray_bind(reflectance = RN, transmittance = TN, .axis = 3)
 }
 
 #' `tav` function

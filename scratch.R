@@ -11,7 +11,19 @@ if (FALSE) {
   Rcpp::Rcpp.package.skeleton(path = ".")
 }
 
-f <- prospect4(1.4, 40, 0.01, 0.01)
+
+kmat <- dataspec_p4
+cc <- rbind(40, c(0.01, 0.005), 0.01)
+N <- 1.4
+k <-  kmat %*% cc
+refractive <- refractive_p45
+
+out2 <- prospect4(1.4, c(30, 40, 50), c(0.01, 0.005, 0.002), 0.01)
+plot(c(400, 2500), c(0, 1), type = 'n',
+     xlab = "Wavelength (nm)",
+     ylab = "Spectra")
+matplot(400:2500, f[,,1], type = "l", add = TRUE)
+matplot(400:2500, 1 - f[,,2], type = "l", add = TRUE)
 
 if (FALSE) {
   debug(gpm)
