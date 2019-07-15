@@ -11,10 +11,6 @@
 #' @return Matrix of reflectance and transmittance values
 #' @rdname prospect
 #' @author Alexey Shiklomanov
-#' @useDynLib rrtm, .registration = TRUE
-#' @importFrom Rcpp sourceCpp
-NULL
-
 #' @rdname prospect
 #' @export
 prospect4 <- function(N, Cab, Cw, Cm,
@@ -45,53 +41,6 @@ prospectd <- function(N, Cab, Car, Canth, Cbrown, Cw, Cm,
   gpm(k, refractive, N)
 }
 
-gpm <- function(k, refractive, N) {
-  # Global transmittance
-  trans <- (1 - k) * exp(-k) + k ^ 2 * gsl::expint_E1(k)
-
-  # reflectivity and transmissivity at the interface
-  t12 <- tav_abs(40, refractive)
-  tav_90 <- tav_abs(90, refractive)
-  t21 <- tav_90 / refractive ^ 2
-  r12 <- 1 - t12
-  r21 <- 1 - t21
-  x <- t12 / tav_90
-  y <- x * (tav_90 - 1) + 1 - t12
-
-  # Reflectance and transmittance of the elementary layer (N = 1)
-  trans_2 <- trans ^ 2
-  t12_t21 <- t12 * t21
-  r21_2 <- r21 ^ 2
-  ra <- r12 + (t12_t21 * r21 * trans_2) / (1 - r21_2 * trans_2)
-  ta <- (t12_t21 * trans) / (1 - r21_2 * trans_2)
-  r90 <- (ra - y) / x
-  t90 <- ta / x
-
-  t90_2 <- t90 ^ 2
-  r90_2 <- r90 ^ 2
-  delta <- sqrt((t90_2 - r90_2 - 1)^2 - 4 * r90_2)
-  beta <- (1 + r90_2 - t90_2 - delta) / (2 * r90)
-  va <- (1 + r90_2 - t90_2 + delta) / (2 * r90)
-
-  va_beta <- pmin(va * (beta - r90), 1e-14)
-  vb <- sqrt(beta * (va - r90) / va_beta)
-
-  vbNN <- vb ^ (N - 1)
-  vbNNi <- vbNN ^ -1
-  vbNN_diff <- vbNN - vbNNi
-  vai <- va ^ -1
-
-  s1 <- ta * t90 * vbNN_diff
-  s2 <- ta * (va - vai)
-  s3 <- va * vbNN - vai * vbNNi - r90 * vbNN_diff
-  
-  ### Calculate output reflectance and transmittance of the modeled leaf
-  RN <- ra + s1 / s3
-  TN <- s2 / s3
-
-  cbind("reflectance" = RN, "transmittance" = TN)
-}
-
 #' Generalized plate model
 #'
 #' @references Allen W.A., Gausman H.W., Richardson A.J., Thomas J.R.
@@ -106,59 +55,62 @@ gpm <- function(k, refractive, N) {
 #' @param N Effective number of leaf layers (`numeric(1)`)
 #' @return 
 #' @author Alexey Shiklomanov
-gpm2 <- function(k, refractive, N) {
+gpm <- function(k, refractive, N) {
+  # global transmittance
+  gt0 <- k > 0
+  k0 <- k[gt0]
+  trans <- rep(1.0, length(k))
+  trans[gt0] <- (1 - k) * exp(-k0) + k0 ^ 2 * gsl::expint_E1(k0)
 
   # Reflectance/transmittance of a single layer
+  talf <- tav_abs(40, refractive)
+  ralf <- 1 - talf
+  t12 <- tav_abs(90, refractive)
+  r12 <- 1 - t12
+  t21 <- t12 / (refractive ^ 2)
+  r21 <- 1 - t21
 
-  # Can be pre-calculated for inversion
-  refractive2 <- refractive * refractive
-  t1 <- tav_abs(90, refractive)
-  t2 <- tav_abs(40, refractive)
-  t12 <- t1 * t1
-  t22 <- t2 * t2
+  denom <- 1 - r21 ^ 2 * trans ^ 2
+  Ta <- talf * trans * t21 / denom
+  Ra <- ralf + r21 * trans * Ta
 
-  # Depend on k -- cannot be pre-calculated 
-  # NOTE: This returns a dim(k) x 1 matrix
-  tau <- gsl::expint_E1(k)[,1]
-  tau2 <- tau * tau
+  t <- t12 * trans * t21 / denom
+  r <- r12 + r21 * trans * t
 
-  x1 <- 1 - t1
-  x2 <- t12 * tau2 * (refractive2 - t1)
-  x3 <- t12 * tau * refractive2
-  x4 <- refractive2 * refractive2 - tau2 * (refractive2 - t1) ^ 2
-  x5 <- t2 / t1
-  x6 <- x5 * (t1 - 1) + 1 - t2
-  r  <- x1 + x2 / x4
-  t  <- x3 / x4
-  ra <- x5 * r + x6
-  ta <- x5 * t
+  # Reflectance/transmittance of N layers
+  D <- sqrt((1 + r + t) * (1 + r - t) * (1 - r + t) * (1 - r - t))
+  r2 <- r ^ 2
+  t2 <- t ^ 2
+  va <- (1 + r2 - t2 + D) / (2 * r)
+  vb <- (1 - r2 + t2 + D) / (2 * t)
 
-  # Reflectance and transmittance of N layers
+  vbNN <- vb ^ (N - 1)
+  vbNN2 <- vbNN ^ 2
+  va2 <- va ^ 2
+  denomx <- va2 * vbNN2 - 1
+  Rsub <- va * (vbNN2 - 1) / denomx
+  Tsub <- vbNN * (va2 - 1) / denomx
 
-  t_2 <- t * t
-  r_2 <- r * r
-  rt_2 <- r_2 - t_2
-  rx2 <- r * 2
-  
-  delta <- (t_2 - r_2 - 1) ^ 2 - 4 * r_2
-  print(min(delta))
-  print(sum(delta < 0))
-  delta_rt <- sqrt(delta)
-  beta <- (1 - rt_2 - delta_rt) / rx2
-  va <- (1 + rt_2 + delta_rt) / rx2
-  vb <- sqrt(beta * (va - r) / (va * (beta - r)))
+  gt1 <- r + t >= 1
+  tgt1 <- t[gt1]
+  Tsub[gt1] <- tgt1 / (tgt1 + (1 - tgt1) * (N - 1))
+  Rsub[gt1] <- 1 - Tsub[gt1]
 
-  vbnm1 <- vb ^ (N - 1)
-  inv_vbnm1 <- 1 / vbnm1
-  inv_va <- 1 / va
-  
-  s1 <- ra * (va * vbnm1 - inv_va * inv_vbnm1) + (ta * t - ra * r) * (vbnm1 - inv_vbnm1)
-  s2 <- ta * (va - inv_va)
-  s3 <- va * vbnm1 - (1 / va) * inv_vbnm1 - r * (vbnm1 - inv_vbnm1)
-
-  cbind(reflectance = s1 / s3, transmittance = s2 / s3)
+  denomy <- 1 - Rsub * r
+  RN <- Ra + Ta * Rsub * t / denomy
+  TN <- Ta * Tsub / denomy
+  cbind(reflectance = RN, transmittance = TN)
 }
 
+#' `tav` function
+#'
+#' @references Stern F. (1964), Transmission of isotropic radiation
+#'   across an interface between two dielectrics, Appl. Opt.,
+#'   3(1):111-113. Allen W.A. (1973), Transmission of isotropic light
+#'   across a dielectric surface in two and three dimensions, J. Opt.
+#'   Soc. Am., 63(6):664-666.
+#' @param theta Angle of incident radiation (in degrees)
+#' @param refractive Refractive index (vector)
 tav_abs <- function(theta, refractive) {
   if (eq(theta, 0)) {
     result <- 4 * refractive / (refractive + 1) ^ 2
