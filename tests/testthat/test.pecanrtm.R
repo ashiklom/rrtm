@@ -1,5 +1,7 @@
 context("Results match PEcAnRTM")
 
+skip("Skipping these tests for now.")
+
 skip_if_not_installed("PEcAnRTM")
 
 vec_equal <- function(x, y) {
