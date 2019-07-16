@@ -99,3 +99,7 @@ gpm_mine <- function(k, refractive, N) {
 
   cbind(reflectance = s1 / s3, transmittance = s2 / s3)
 }
+
+if (FALSE) {
+  p <- rrtm::prospect4(1.4, 40, 0.01, 0.01)
+}

@@ -29,5 +29,6 @@ usethis::use_data(
   dataspec_p5,
   dataspec_pd,
   refractive_p45,
-  refractive_pd
+  refractive_pd,
+  internal = TRUE
 )
