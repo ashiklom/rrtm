@@ -1,3 +1,4 @@
-^data-raw$
+^data-raw/
 ^LICENSE\.md$
 ^README\.Rmd$
+^scratch/

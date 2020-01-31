@@ -111,3 +111,31 @@ rrtm <- tibble::tibble(
 fortran
 
 map2_lgl(rrtm, fortran, ~isTRUE(all.equal(.x, .y)))
+
+##################################################
+# Fitting algorithm
+##################################################
+# Setup
+library(rrtm)
+library(purrr)
+
+p4l <- function(params) {
+  prospect4(params[1], params[2], params[3], params[4])[,,1]
+}
+
+true_param <- c(1.4, 40, 0.01, 0.01)
+observed <- p4l(true_param)
+
+r_prior <- function() {
+  c(
+    1 + rexp(1, 1),
+    rlnorm(1, log(40), log(5)),
+    rlnorm(1, log(0.01), 1),
+    rlnorm(1, log(0.01), 1)
+  )
+}
+
+curve(dexp(x - 1, 1), 1, 10)
+curve(dlnorm(x, log(0.01), 1), 0, 0.05)
+
+# Begin differential evolution
