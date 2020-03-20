@@ -15,5 +15,5 @@ RoxygenNote: 6.1.1
 Imports: 
     gsl,
     rray
-Suggests: 
+Suggests:
     testthat
