@@ -50,7 +50,7 @@ volscatt <- function(solar_zenith, instrument_zenith, azimuth, leaf_angle) {
     bto[i] <- acos(cosbto[i])
     doo[i] <- so[i]
   }
-  j <- instrument_zenith < 90
+  j <- !i & instrument_zenith < 90
   if (any(j)) {
     bto[j] <- pi
     doo[j] <- co[j]
