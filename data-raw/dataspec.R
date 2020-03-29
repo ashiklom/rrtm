@@ -21,7 +21,7 @@ dataspec_p4 <- read_raw_data(file.path("data-raw", "prospect4_raw.dat"))
 dataspec_p5 <- read_raw_data(file.path("data-raw", "prospect5_raw.dat"))
 dataspec_pd_full <- read_raw_data(file.path("data-raw", "prospectd_raw.dat"))
 
-dataspec_pd <- dataspec_pd_full[, !grep("refractive", colnames(dataspec_pd_full))]
+dataspec_pd <- dataspec_pd_full[, !grepl("refractive", colnames(dataspec_pd_full))]
 refractive_pd <- dataspec_pd_full[, "refractive"]
 
 usethis::use_data(
