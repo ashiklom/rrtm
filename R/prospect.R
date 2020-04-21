@@ -7,40 +7,29 @@
 #' @param Cbrown "Brown matter" content (unitless)
 #' @param Cw Leaf water content (g cm-2), or leaf water thickness (cm)
 #' @param Cm Dry matter content (g cm-2)
-#' @param kmat Spectral coefficient matrix
 #' @return Matrix of reflectance and transmittance values
 #' @rdname prospect
 #' @author Alexey Shiklomanov
 #' @rdname prospect
 #' @export
-prospect4 <- function(N, Cab, Cw, Cm,
-                      kmat = dataspec_p4,
-                      refractive = refractive_p45) {
-  stopifnot(NCOL(kmat) == 3)
-  # TODO: Broadcast division
+prospect4 <- function(N, Cab, Cw, Cm) {
   cc <- rbind(Cab, Cw, Cm) / N
-  k <-  kmat %*% cc 
-  gpm(k, refractive, N)
+  k <-  dataspec_p4 %*% cc
+  gpm(k, N, p45_talf, p45_t12, p45_t21)
 }
 
 #' @rdname prospect
 #' @export
-prospect5 <- function(N, Cab, Car, Cw, Cm, Cbrown = 0,
-                      kmat = dataspec_p5,
-                      refractive = refractive_p45) {
-  stopifnot(NCOL(kmat) == 5)
+prospect5 <- function(N, Cab, Car, Cw, Cm, Cbrown = 0) {
   cc <- rbind(Cab, Car, Cbrown, Cw, Cm) / N
-  k <-  kmat %*% cc
-  gpm(k, refractive, N)
+  k <-  dataspec_p5 %*% cc
+  gpm(k, N, p45_talf, p45_t12, p45_t21)
 }
 
 #' @rdname prospect
 #' @export
-prospectd <- function(N, Cab, Car, Canth, Cbrown, Cw, Cm,
-                      kmat = dataspec_pd,
-                      refractive = refractive_pd) {
-  stopifnot(NCOL(kmat) == 6)
+prospectd <- function(N, Cab, Car, Canth, Cbrown, Cw, Cm) {
   cc <- rbind(Cab, Car, Canth, Cbrown, Cw, Cm) / N
-  k <-  kmat %*% cc
-  gpm(k, refractive, N)
+  k <-  dataspec_pd %*% cc
+  gpm(k, N, pd_talf, pd_t12, pd_t21)
 }

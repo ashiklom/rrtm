@@ -1,3 +1,5 @@
+devtools::load_all()
+
 read_raw_data <- function(file) {
   raw_lines <- readLines(file, warn = FALSE)
   vals <- strsplit(raw_lines, ",|[[:space:]]")
@@ -24,11 +26,21 @@ dataspec_pd_full <- read_raw_data(file.path("data-raw", "prospectd_raw.dat"))
 dataspec_pd <- dataspec_pd_full[, !grepl("refractive", colnames(dataspec_pd_full))]
 refractive_pd <- dataspec_pd_full[, "refractive"]
 
+# Pre-calculate tav -- this is a relatively expensive operation
+p45_talf <- tav_abs(40, refractive_p45)
+p45_t12 <- tav_abs(90, refractive_p45)
+p45_t21 <- p45_t12 / (refractive_p45 ^ 2)
+pd_talf <- tav_abs(40, refractive_pd)
+pd_t12 <- tav_abs(90, refractive_pd)
+pd_t21 <- p45_t12 / (refractive_pd ^ 2)
+
 usethis::use_data(
   dataspec_p4,
   dataspec_p5,
   dataspec_pd,
   refractive_p45,
   refractive_pd,
+  p45_talf, p45_t12, p45_t21,
+  pd_talf, pd_t12, pd_t21,
   internal = TRUE
 )

@@ -8,11 +8,11 @@
 #'   Proceedings of the Royal Society of London, 11:545-556.
 #'
 #' @param k Optical depth (`numeric(nwl)`)
-#' @param refractive Refractive index (`numeric(nwl)`)
 #' @param N Effective number of leaf layers (`numeric(1)`)
+#' @param talf,t12,t21 Pre-calculated quantities based on refractive index and angle
 #' @return
 #' @author Alexey Shiklomanov
-gpm <- function(k, refractive, N) {
+gpm <- function(k, N, talf, t12, t21) {
   # global transmittance
   gt0 <- k > 0
   k0 <- k[gt0]
@@ -20,11 +20,12 @@ gpm <- function(k, refractive, N) {
   trans[gt0] <- (1 - k) * exp(-k0) + k0 ^ 2 * gsl::expint_E1(k0)
 
   # Reflectance/transmittance of a single layer
-  talf <- tav_abs(40, refractive)
+  # Commented quantities are precalculated
+  ## talf <- tav_abs(40, refractive)
   ralf <- 1 - talf
-  t12 <- tav_abs(90, refractive)
+  ## t12 <- tav_abs(90, refractive)
   r12 <- 1 - t12
-  t21 <- t12 / (refractive ^ 2)
+  ## t21 <- t12 / (refractive ^ 2)
   r21 <- 1 - t21
 
   denom <- 1 - r21 ^ 2 * trans ^ 2
