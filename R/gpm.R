@@ -34,6 +34,14 @@ gpm <- function(k, refractive, N) {
   t <- t12 * trans * t21 / denom
   r <- r12 + r21 * trans * t
 
+  Tsub <- numeric(2101)
+  Rsub <- numeric(2101)
+
+  gt1 <- r + t >= 1
+  tgt1 <- t[gt1]
+  Tsub[gt1] <- tgt1 / (tgt1 + (1 - tgt1) * (N - 1))
+  Rsub[gt1] <- 1 - Tsub[gt1]
+
   # Reflectance/transmittance of N layers
   D <- sqrt((1 + r + t) * (1 + r - t) * (1 - r + t) * (1 - r - t))
   r2 <- r ^ 2
@@ -47,11 +55,6 @@ gpm <- function(k, refractive, N) {
   denomx <- va2 * vbNN2 - 1
   Rsub <- va * (vbNN2 - 1) / denomx
   Tsub <- vbNN * (va2 - 1) / denomx
-
-  gt1 <- r + t >= 1
-  tgt1 <- t[gt1]
-  Tsub[gt1] <- tgt1 / (tgt1 + (1 - tgt1) * (N - 1))
-  Rsub[gt1] <- 1 - Tsub[gt1]
 
   denomy <- 1 - Rsub * r
   RN <- Ra + Ta * Rsub * t / denomy

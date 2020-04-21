@@ -1,5 +1,6 @@
 test_that("Volume-scattering function works across angles", {
   angles <- seq(-60, 60, 10)
+  l <- angles
   for (sa in angles) {
     for (oa in angles) {
       for (aa in angles) {
