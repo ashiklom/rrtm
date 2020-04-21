@@ -34,6 +34,17 @@ pd_talf <- tav_abs(40, refractive_pd)
 pd_t12 <- tav_abs(90, refractive_pd)
 pd_t21 <- p45_t12 / (refractive_pd ^ 2)
 
+# Read wood reflectance
+wood_spec_file <- file.path("extdata", "wood-reflect.dat")
+wood_spec <- scan(wood_spec_file)
+wood_spec <- c(wood_spec, tail(wood_spec, 1))
+
+# Read soil reflectance for Hapke model
+soil_refl_file <- file.path("extdata", "hapke-soil.dat")
+soil_refl <- read.table(soil_refl_file, header = FALSE)
+dry_soil <- soil_refl[, 2]
+wet_soil <- soil_refl[, 3]
+
 usethis::use_data(
   dataspec_p4,
   dataspec_p5,
@@ -42,5 +53,9 @@ usethis::use_data(
   refractive_pd,
   p45_talf, p45_t12, p45_t21,
   pd_talf, pd_t12, pd_t21,
+  wood_spec,
+  dry_soil,
+  wet_soil,
+  overwrite = TRUE,
   internal = TRUE
 )
