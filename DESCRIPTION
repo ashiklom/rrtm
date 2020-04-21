@@ -13,8 +13,13 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.0
 Imports: 
-    gsl
+    gsl,
+    Rcpp,
+    RcppArmadillo
 Suggests:
     testthat
 Depends: 
     R (>= 2.10)
+LinkingTo: 
+    Rcpp,
+    RcppArmadillo
