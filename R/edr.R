@@ -251,14 +251,13 @@ sw_two_stream <- function(czen,
   }
 
   # Convert scalar quantities to matrices, so I can do elementwise multiplication
-  vec2mat <- function(x) matrix(rep(x, nwl), nrow = nwl, byrow = TRUE)
-  etai <- vec2mat(etai)
-  leaf_weight <- vec2mat(leaf_weight)
-  wood_weight <- vec2mat(wood_weight)
-  mu <- vec2mat(mu)
-  mu0 <- vec2mat(mu0)
-  epsil0 <- vec2mat(epsil0)
-  expm0_minus <- vec2mat(expm0_minus)
+  etai <- vec2mat(etai, nwl)
+  leaf_weight <- vec2mat(leaf_weight, nwl)
+  wood_weight <- vec2mat(wood_weight, nwl)
+  mu <- vec2mat(mu, nwl)
+  mu0 <- vec2mat(mu0, nwl)
+  epsil0 <- vec2mat(epsil0, nwl)
+  expm0_minus <- vec2mat(expm0_minus, nwl)
 
   # Diffuse radiation properties
   # All of these are wavelength-dependent quantities (nwl x ncoh)
@@ -375,3 +374,5 @@ sw_two_stream <- function(czen,
     light_diff_level = light_diff_level  # Diffuse light level, by cohort (nwl x ncoh)
   )
 }
+
+vec2mat <- function(x, n) matrix(rep(x, n), nrow = n, byrow = TRUE)
