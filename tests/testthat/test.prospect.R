@@ -14,11 +14,3 @@ test_that("PROSPECT 5", {
   expect_true(all(p5b > 0))
   expect_true(all(p5b < 1))
 })
-
-test_that("Multivariate PROSPECT", {
-  skip("Temporarily disable broadcasting")
-  x <- prospect4(1.4, c(40, 50, 60), 0.01, 0.01)
-  expect_equal(dim(x), c(2101, 3, 2))
-  expect_true(all(x > 0))
-  expect_true(all(x < 1))
-})
