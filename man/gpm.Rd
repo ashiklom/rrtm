@@ -14,7 +14,7 @@ gpm(k, N, talf, t12, t21)
 \item{talf, t12, t21}{Pre-calculated quantities based on refractive index and angle}
 }
 \value{
-
+A length-2 list containing the modeled reflectance and transmittance
 }
 \description{
 Generalized plate model

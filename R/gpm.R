@@ -10,7 +10,7 @@
 #' @param k Optical depth (`numeric(nwl)`)
 #' @param N Effective number of leaf layers (`numeric(1)`)
 #' @param talf,t12,t21 Pre-calculated quantities based on refractive index and angle
-#' @return
+#' @return A length-2 list containing the modeled reflectance and transmittance
 #' @author Alexey Shiklomanov
 gpm <- function(k, N, talf, t12, t21) {
   # global transmittance
@@ -58,10 +58,17 @@ gpm <- function(k, N, talf, t12, t21) {
   Tsub <- vbNN * (va2 - 1) / denomx
 
   denomy <- 1 - Rsub * r
-  RN <- Ra + Ta * Rsub * t / denomy
-  TN <- Ta * Tsub / denomy
+  ## result <- matrix(NA_real_, nrow = 2101, ncol = 2,
+  ##                  dimnames = list(NULL, c("reflectance", "transmittance")))
+  ## result[, "reflectance"] <- Ra + Ta * Rsub * t / denomy
+  ## result[, "transmittance"] <- Ta * Tsub / denomy
 
-  rray::rray_bind(reflectance = RN, transmittance = TN, .axis = 3)
+  # NOTE: A matrix here might be better, but returning a list is much faster.
+  result <- list(
+    reflectance = Ra + Ta * Rsub * t / denomy,
+    transmittance = Ta * Tsub / denomy
+  )
+  result
 }
 
 #' `tav` function
