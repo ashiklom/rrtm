@@ -8,7 +8,6 @@
 #' @param Cw Leaf water content (g cm-2), or leaf water thickness (cm)
 #' @param Cm Dry matter content (g cm-2)
 #' @return Matrix of reflectance and transmittance values
-#' @rdname prospect
 #' @author Alexey Shiklomanov
 #' @rdname prospect
 #' @export
