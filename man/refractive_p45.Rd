@@ -5,7 +5,11 @@
 \alias{refractive_p45}
 \alias{refractive_pd}
 \title{Refractive index for PROSPECT model}
-\format{An object of class \code{numeric} of length 2101.}
+\format{
+An object of class \code{numeric} of length 2101.
+
+An object of class \code{numeric} of length 2101.
+}
 \usage{
 refractive_p45
 

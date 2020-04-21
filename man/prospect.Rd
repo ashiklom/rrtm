@@ -6,14 +6,11 @@
 \alias{prospectd}
 \title{PROSPECT leaf spectra model}
 \usage{
-prospect4(N, Cab, Cw, Cm, kmat = dataspec_p4,
-  refractive = refractive_p45)
+prospect4(N, Cab, Cw, Cm)
 
-prospect5(N, Cab, Car, Cw, Cm, Cbrown = 0, kmat = dataspec_p5,
-  refractive = refractive_p45)
+prospect5(N, Cab, Car, Cw, Cm, Cbrown = 0)
 
-prospectd(N, Cab, Car, Canth, Cbrown, Cw, Cm, kmat = dataspec_pd,
-  refractive = refractive_pd)
+prospectd(N, Cab, Car, Canth, Cbrown, Cw, Cm)
 }
 \arguments{
 \item{N}{Effective number of leaf layers}
@@ -23,8 +20,6 @@ prospectd(N, Cab, Car, Canth, Cbrown, Cw, Cm, kmat = dataspec_pd,
 \item{Cw}{Leaf water content (g cm-2), or leaf water thickness (cm)}
 
 \item{Cm}{Dry matter content (g cm-2)}
-
-\item{kmat}{Spectral coefficient matrix}
 
 \item{Car}{Carotenoid content (ug cm -2)}
 

@@ -6,7 +6,13 @@
 \alias{dataspec_p5}
 \alias{dataspec_pd}
 \title{Specific absorption coefficients for PROSPECT model}
-\format{An object of class \code{matrix} with 2101 rows and 3 columns.}
+\format{
+An object of class \code{matrix} with 2101 rows and 3 columns.
+
+An object of class \code{matrix} with 2101 rows and 5 columns.
+
+An object of class \code{matrix} with 2101 rows and 6 columns.
+}
 \usage{
 dataspec_p4
 
