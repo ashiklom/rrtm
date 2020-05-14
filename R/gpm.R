@@ -10,14 +10,16 @@
 #' @param k Optical depth (`numeric(nwl)`)
 #' @param N Effective number of leaf layers (`numeric(1)`)
 #' @param talf,t12,t21 Pre-calculated quantities based on refractive index and angle
+#' @param e1fun Function to use for exponential integral. Default is e1_approx,
+#'   included here. For greater precision, use `gsl::expint_E1`.
 #' @return A length-2 list containing the modeled reflectance and transmittance
 #' @author Alexey Shiklomanov
-gpm <- function(k, N, talf, t12, t21) {
+gpm <- function(k, N, talf, t12, t21, e1fun = e1_approx) {
   # global transmittance
   gt0 <- k > 0
   k0 <- k[gt0]
   trans <- matrix(1.0, nrow(k), ncol(k))
-  trans[gt0] <- (1 - k) * exp(-k0) + k0 ^ 2 * gsl::expint_E1(k0)
+  trans[gt0] <- (1 - k) * exp(-k0) + k0 ^ 2 * e1fun(k0)
 
   # Reflectance/transmittance of a single layer
   # Commented quantities are precalculated
@@ -119,4 +121,13 @@ tav_abs <- function(theta, refractive) {
   tp <- tp1 + tp2 + tp3 + tp4 + tp5
 
   (ts + tp) / (2 * sin(thetarad) ^ 2)
+}
+
+#' Swami and Ohija approximation to the Exponential Integral. This is very
+#' simple, but differences with more precise (but expensive) approaches are
+#' almost completely washed out by PROSPECT math.
+e1_approx <- function(x) {
+  A <- log((0.56146 / x + 0.65) * (1 + x))
+  B <- x^4 * exp(7.7 * x) * (2 + x)^3.7
+  (A^-7.7 + B)^-0.13
 }
