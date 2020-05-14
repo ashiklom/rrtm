@@ -1,0 +1,10 @@
+e1_me <- prospect4(1.4, 40, 0.01, 0.01)
+e1_gsl <- prospect4(1.4, 40, 0.01, 0.01, e1fun = gsl::expint_E1)
+
+par(mfrow = c(2, 2))
+plot(e1_me$reflectance, e1_gsl$reflectance)
+plot(e1_me$transmittance, e1_gsl$transmittance)
+plot(e1_me$reflectance - e1_gsl$reflectance)
+abline(h = 0)
+plot(e1_me$transmittance - e1_gsl$transmittance)
+abline(h = 0)
