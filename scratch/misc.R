@@ -138,4 +138,20 @@ r_prior <- function() {
 curve(dexp(x - 1, 1), 1, 10)
 curve(dlnorm(x, log(0.01), 1), 0, 0.05)
 
-# Begin differential evolution
+##################################################
+
+solar_zenith <- 10
+instrument_zenith <- 0
+azimuth <- 0
+
+p4 <- prospect4(1.4, 40, 0.01, 0.01)
+rsoil <- hapke_soil(0.5)
+
+out <- foursail(p4$r, p4$t,
+                0, 0, 1,
+                3, 0, 10, 0, 0, rsoil)
+
+plot(400:2500, out[[1]], type = 'l')
+lines(400:2500, out[[2]], col = 2)
+lines(400:2500, out[[3]], col = 3)
+lines(400:2500, out[[4]], col = 4)
