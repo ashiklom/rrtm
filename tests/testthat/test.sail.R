@@ -1,5 +1,5 @@
 test_that("Volume-scattering function works across angles", {
-  angles <- seq(-60, 60, 10)
+  angles <- seq(-60, 60, 20)
   l <- angles
   for (sa in angles) {
     for (oa in angles) {
@@ -18,5 +18,15 @@ test_that("Volume-scattering function works across angles", {
         expect_identical(unlist(s["ftau",]), v$ftau, info = angle_info)
       }
     }
+  }
+})
+
+test_that("PRO4SAIL works", {
+  lrt <- prospect4(1.4, 40, 0.01, 0.01)
+  rsoil <- hapke_soil(0.5)
+  sail <- foursail(lrt$reflectance, lrt$transmittance, rsoil, 3)
+  for (stream in sail) {
+    expect_true(all(stream >= 0))
+    expect_true(all(stream <= 1))
   }
 })
