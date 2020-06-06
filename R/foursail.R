@@ -1,16 +1,33 @@
-foursail <- function(leaf_refl, leaf_trans,
-                     LIDFa, LIDFb, LIDF_type,
-                     LAI,
-                     hot_spot,
-                     solar_zenith,
-                     instrument_zenith,
-                     azimuth,
-                     soil_refl,
-                     # Cumulative LIDF as a function of angle
-                     # Default is spherical (integral of f(theta) = sin(theta))
-                     cum_LIDF = function(x) 1 - cos(x * pi / 180)) {
+#' 4SAIL model of canopy reflectance
+#'
+#' @param leaf_refl
+#' @param leaf_trans
+#' @param soil_refl
+#' @param LAI
+#' @param hot_spot
+#' @param LIDFa
+#' @param LIDFb
+#' @param solar_zenith
+#' @param instrument_zenith
+#' @param azimuth
+#' @return
+#' @author Alexey Shiklomanov
+foursail <- function(leaf_refl, leaf_trans, soil_refl, LAI,
+                     hot_spot = 0,
+                     LIDFa = -0.35, LIDFb = -0.15,
+                     solar_zenith = 0,
+                     instrument_zenith = 0,
+                     azimuth = 0) {
 
-  stopifnot(LAI >= 0)
+  stopifnot(
+    LAI >= 0,
+    all(leaf_refl >= 0),
+    all(leaf_trans >= 0),
+    all(soil_refl >= 0),
+    length(leaf_trans) %in% c(1, length(leaf_refl)),
+    length(soil_refl) %in% c(1, length(leaf_refl))
+  )
+
   if (LAI == 0) {
     return(list(
       bhr = soil_refl,
@@ -42,7 +59,7 @@ foursail <- function(leaf_refl, leaf_trans,
   # TODO: Pull out of SAIL calculation (don't have to do it every time)
   litab <- c(seq(5, 75, 10), seq(81, 89, 2))
   dcum_in <- c(seq(10, 80, 10), seq(82, 88, 2))
-  F_lidf <- c(dcum(-0.35, -0.15, dcum_in), 1)
+  F_lidf <- c(dcum(LIDFa, LIDFb, dcum_in), 1)
   lidf <- F_lidf
   for (i in seq(length(litab), 2)) {
     lidf[i] <- lidf[i] - lidf[i - 1]
@@ -164,24 +181,25 @@ foursail <- function(leaf_refl, leaf_trans,
   }
 
 
- rsos = w*LAI*sumint
+  rsos <-  w * LAI * sumint
 
   # Total canopy contribution
-  rso=rsos+rsod
+  rso <- rsos + rsod
 
   # Interaction with the soil
-  dn <- 1. - soil_refl*rdd
+  dn <- 1. - soil_refl * rdd
 
-  # rddt: bi-hemispherical reflectance factor
-  bhr <- rdd+tdd*soil_refl*tdd/dn
-  # rsdt: directional-hemispherical reflectance factor for solar incident flux
-  dhr <- rsd+(tsd+tss)*soil_refl*tdd/dn
-  # rdot: hemispherical-directional reflectance factor in viewing direction
-  hdr <- rdo+tdd*soil_refl*(tdo+too)/dn
-  # rsot: bi-directional reflectance factor
-  rsodt <- rsod+((tss+tsd)*tdo+(tsd+tss*soil_refl*rdd)*too)*soil_refl/dn
-  rsost <- rsos+tsstoo*soil_refl
-  bdr <- rsost+rsodt
+  # bi-hemispherical reflectance factor
+  bhr <- rdd + tdd * soil_refl * tdd / dn
+  # directional-hemispherical reflectance factor for solar incident flux
+  dhr <- rsd + (tsd + tss) * soil_refl * tdd / dn
+  # hemispherical-directional reflectance factor in viewing direction
+  hdr <- rdo + tdd * soil_refl * (tdo + too) / dn
+  # bi-directional reflectance factor
+  rsodt <- rsod + ((tss + tsd) * tdo + (tsd + tss * soil_refl * rdd) * too) *
+    soil_refl / dn
+  rsost <- rsos + tsstoo * soil_refl
+  bdr <- rsost + rsodt
 
   list(bhr = bhr, dhr = dhr, hdr = hdr, bdr = bdr)
 }
