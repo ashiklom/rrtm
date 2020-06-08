@@ -21,12 +21,29 @@ test_that("Volume-scattering function works across angles", {
   }
 })
 
-test_that("PRO4SAIL works", {
+test_that("Manual PRO4SAIL works", {
   lrt <- prospect4(1.4, 40, 0.01, 0.01)
   rsoil <- hapke_soil(0.5)
   sail <- foursail(lrt$reflectance, lrt$transmittance, rsoil, 3)
   for (stream in sail) {
     expect_true(all(stream >= 0))
     expect_true(all(stream <= 1))
+  }
+})
+
+test_that("PRO4SAIL shortcuts work", {
+  args <- list(
+    N = 1.4, Cab = 40, Car = 8, Canth = 10, Cbrown = 0,
+    Cw = 0.01, Cm = 0.01,
+    LAI = 3, soil_moisture = 0.5
+  )
+  for (fun in c(pro4sail_4, pro4sail_5, pro4sail_d)) {
+    fun <- pro4sail_5
+    cargs <- args[head(names(formals(fun)), -1)]
+    sail <- do.call(fun, cargs)
+    for (stream in sail) {
+      expect_true(all(stream >= 0))
+      expect_true(all(stream <= 1))
+    }
   }
 })

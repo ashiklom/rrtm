@@ -212,8 +212,9 @@ jfunc1 <- function(k, l, t) {
   del <- (k - l) * t
   out <- numeric(length(l))
   iii <- abs(del) > 1e-3
-  out[iii] <- (exp(-l * t) - exp(-k * t)) / (k - l)
-  out[!iii] <- 0.5 * t * (exp(-k * t) + exp(-l * t)) * (1 - (del^2) / 12)
+  out[iii] <- (exp(-l[iii] * t) - exp(-k * t)) / (k - l[iii])
+  out[!iii] <- 0.5 * t * (exp(-k * t) + exp(-l[!iii] * t)) *
+    (1 - (del[!iii]^2) / 12)
   out
 }
 
