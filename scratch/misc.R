@@ -155,3 +155,28 @@ plot(400:2500, out[[1]], type = 'l')
 lines(400:2500, out[[2]], col = 2)
 lines(400:2500, out[[3]], col = 3)
 lines(400:2500, out[[4]], col = 4)
+
+##################################################
+N <- 1.4
+Cab <- 100
+Cw <- 0.01
+Cm <- 0.01
+
+talf <- p45_talf
+t12 <- p45_t12
+t21 <- p45_t21
+
+e1fun <- gsl::expint_E1
+
+log10(abs(trans[tlt0]))
+
+tgsl <- trans
+tapprox <- trans
+range(tgsl)
+range(tapprox)
+plot(log(tgsl), log(tapprox))
+abline(a = 0, b = 1)
+
+plot(trans, type = "l")
+k[trans < 0]
+trans[trans < ]

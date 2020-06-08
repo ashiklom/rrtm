@@ -19,7 +19,24 @@ gpm <- function(k, N, talf, t12, t21, e1fun = e1_approx) {
   gt0 <- k > 0
   k0 <- k[gt0]
   trans <- matrix(1.0, nrow(k), ncol(k))
-  trans[gt0] <- (1 - k) * exp(-k0) + k0 ^ 2 * e1fun(k0)
+  trans[gt0] <- (1 - k0) * exp(-k0) + k0 ^ 2 * e1fun(k0)
+
+  tlt0 <- trans < 0
+  if (any(tlt0)) {
+    warning(
+      sum(tlt0),
+      " transmissivity values less than zero ",
+      "were set to zero. ",
+      "This happens under very high absorptivity values ",
+      "(e.g. very high pigment concentrations) ",
+      "and when using the fast exponential integral approximation. ",
+      "The transmissivity is on the order of <= 1e-7 ",
+      "so this warning can probably be ignored.",
+      "However, if you want more precise results, you can try setting ",
+      "`e1fun = gsl::expint_E1` to use a more precise approximation."
+    )
+    trans[tlt0] <- 0
+  }
 
   # Reflectance/transmittance of a single layer
   # Commented quantities are precalculated
@@ -34,18 +51,25 @@ gpm <- function(k, N, talf, t12, t21, e1fun = e1_approx) {
   Ta <- talf * trans * t21 / denom
   Ra <- ralf + r21 * trans * Ta
 
-  t <- t12 * trans * t21 / denom
-  r <- r12 + r21 * trans * t
+  tt <- t12 * trans * t21 / denom
+  rr <- r12 + r21 * trans * tt
 
   Tsub <- numeric(2101)
   Rsub <- numeric(2101)
 
-  gt1 <- r + t >= 1
-  tgt1 <- t[gt1]
+  gt1 <- rr + tt >= 1
+  tgt1 <- tt[gt1]
   Tsub[gt1] <- tgt1 / (tgt1 + (1 - tgt1) * (N - 1))
   Rsub[gt1] <- 1 - Tsub[gt1]
 
+  # Extremely high absorptivity leads to zero reflectance and transmittance
+  inf <- rr == 0 | tt == 0
+  Tsub[inf] <- 0
+  Rsub[inf] <- 0
+
   # Reflectance/transmittance of N layers
+  r <- rr[!gt1 & !inf]
+  t <- tt[!gt1 & !inf]
   D <- sqrt((1 + r + t) * (1 + r - t) * (1 - r + t) * (1 - r - t))
   r2 <- r ^ 2
   t2 <- t ^ 2
@@ -56,10 +80,10 @@ gpm <- function(k, N, talf, t12, t21, e1fun = e1_approx) {
   vbNN2 <- vbNN ^ 2
   va2 <- va ^ 2
   denomx <- va2 * vbNN2 - 1
-  Rsub <- va * (vbNN2 - 1) / denomx
-  Tsub <- vbNN * (va2 - 1) / denomx
+  Rsub[!gt1 & !inf] <- va * (vbNN2 - 1) / denomx
+  Tsub[!gt1 & !inf] <- vbNN * (va2 - 1) / denomx
 
-  denomy <- 1 - Rsub * r
+  denomy <- 1 - Rsub * rr
   ## result <- matrix(NA_real_, nrow = 2101, ncol = 2,
   ##                  dimnames = list(NULL, c("reflectance", "transmittance")))
   ## result[, "reflectance"] <- Ra + Ta * Rsub * t / denomy
@@ -67,7 +91,7 @@ gpm <- function(k, N, talf, t12, t21, e1fun = e1_approx) {
 
   # NOTE: A matrix here might be better, but returning a list is much faster.
   result <- list(
-    reflectance = Ra + Ta * Rsub * t / denomy,
+    reflectance = Ra + Ta * Rsub * tt / denomy,
     transmittance = Ta * Tsub / denomy
   )
   result
