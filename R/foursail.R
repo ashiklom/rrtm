@@ -1,17 +1,21 @@
 #' 4SAIL model of canopy reflectance
 #'
-#' @param leaf_refl
-#' @param leaf_trans
-#' @param soil_refl
-#' @param LAI
-#' @param hot_spot
-#' @param LIDFa
-#' @param LIDFb
-#' @param solar_zenith
-#' @param instrument_zenith
-#' @param azimuth
-#' @return
+#' @param leaf_refl Leaf reflectance spectrum
+#' @param leaf_trans Leaf transmittance spectrum
+#' @param soil_refl Soil reflectance spectrum
+#' @param LAI Leaf area index
+#' @param hot_spot Hot spot effect (default = 0)
+#' @param LIDFa Leaf angle distribution function, parameter 1 (default = -0.35)
+#' @param LIDFb Leaf angle distribution function, parameter 2 (default = -0.15)
+#' @param solar_zenith Incident solar zenith angle, in degrees (default = 0)
+#' @param instrument_zenith Instrument/observer zenith angle, in degrees (default = 0)
+#' @param azimuth Sun-instrument azimuth angle, in degrees (default = 0)
+#' @return List containing four reflectance streams: bi-hemispherical (diffuse
+#'   in, diffuse out; BHR), directional-hemispherical (direct in, diffuse out;
+#'   DHR), hemispherical-directional (diffuse in, direct out; HDR), and
+#'   bi-directional (direct in, direct out; BHR).
 #' @author Alexey Shiklomanov
+#' @export
 foursail <- function(leaf_refl, leaf_trans, soil_refl, LAI,
                      hot_spot = 0,
                      LIDFa = -0.35, LIDFb = -0.15,

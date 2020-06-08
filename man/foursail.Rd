@@ -17,8 +17,32 @@ foursail(
   azimuth = 0
 )
 }
-\value{
+\arguments{
+\item{leaf_refl}{Leaf reflectance spectrum}
 
+\item{leaf_trans}{Leaf transmittance spectrum}
+
+\item{soil_refl}{Soil reflectance spectrum}
+
+\item{LAI}{Leaf area index}
+
+\item{hot_spot}{Hot spot effect (default = 0)}
+
+\item{LIDFa}{Leaf angle distribution function, parameter 1 (default = -0.35)}
+
+\item{LIDFb}{Leaf angle distribution function, parameter 2 (default = -0.15)}
+
+\item{solar_zenith}{Incident solar zenith angle, in degrees (default = 0)}
+
+\item{instrument_zenith}{Instrument/observer zenith angle, in degrees (default = 0)}
+
+\item{azimuth}{Sun-instrument azimuth angle, in degrees (default = 0)}
+}
+\value{
+List containing four reflectance streams: bi-hemispherical (diffuse
+in, diffuse out; BHR), directional-hemispherical (direct in, diffuse out;
+DHR), hemispherical-directional (diffuse in, direct out; HDR), and
+bi-directional (direct in, direct out; BHR).
 }
 \description{
 4SAIL model of canopy reflectance
