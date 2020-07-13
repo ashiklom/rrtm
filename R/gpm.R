@@ -18,7 +18,7 @@ gpm <- function(k, N, talf, t12, t21, e1fun = e1_approx) {
   # global transmittance
   gt0 <- k > 0
   k0 <- k[gt0]
-  trans <- matrix(1.0, nrow(k), ncol(k))
+  trans <- rep(1.0, length(k))
   trans[gt0] <- (1 - k0) * exp(-k0) + k0 ^ 2 * e1fun(k0)
 
   tlt0 <- trans < 0
