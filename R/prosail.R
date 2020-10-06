@@ -10,7 +10,7 @@
 #' @export
 pro4sail_4 <- function(N, Cab, Cw, Cm, LAI, soil_moisture,
                        ...) {
-  lrt <- prospect4(N, Cab, Cw, Cm)
+  lrt <- prospect4(N = N, Cab = Cab, Cw = Cw, Cm = Cm)
   rsoil <- hapke_soil(soil_moisture)
   foursail(lrt$reflectance, lrt$transmittance, rsoil, LAI, ...)
 }
@@ -19,7 +19,8 @@ pro4sail_4 <- function(N, Cab, Cw, Cm, LAI, soil_moisture,
 #' @export
 pro4sail_5 <- function(N, Cab, Car, Cbrown, Cw, Cm, LAI, soil_moisture,
                        ...) {
-  lrt <- prospect5(N, Cab, Car, Cbrown, Cw, Cm)
+  lrt <- prospect5(N = N, Cab = Cab, Car = Car, Cbrown = Cbrown,
+                   Cw = Cw, Cm = Cm)
   rsoil <- hapke_soil(soil_moisture)
   foursail(lrt$reflectance, lrt$transmittance, rsoil, LAI, ...)
 }
@@ -29,7 +30,8 @@ pro4sail_5 <- function(N, Cab, Car, Cbrown, Cw, Cm, LAI, soil_moisture,
 pro4sail_d <- function(N, Cab, Car, Canth, Cbrown, Cw, Cm,
                        LAI, soil_moisture,
                        ...) {
-  lrt <- prospectd(N, Cab, Car, Canth, Cbrown, Cw, Cm)
+  lrt <- prospectd(N = N, Cab = Cab, Car = Car, Canth = Canth,
+                   Cbrown = Cbrown, Cw = Cw, Cm = Cm)
   rsoil <- hapke_soil(soil_moisture)
   foursail(lrt$reflectance, lrt$transmittance, rsoil, LAI, ...)
 }

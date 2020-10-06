@@ -8,9 +8,9 @@
 \usage{
 prospect4(N, Cab, Cw, Cm, ...)
 
-prospect5(N, Cab, Car, Cw, Cm, Cbrown = 0, ...)
+prospect5(N, Cab, Car, Cbrown, Cw, Cm, ...)
 
-prospectd(N, Cab, Car, Canth, Cbrown, Cw, Cm, ...)
+prospectd(N, Cab, Car, Cbrown, Canth, Cw, Cm, ...)
 }
 \arguments{
 \item{N}{Effective number of leaf layers}
