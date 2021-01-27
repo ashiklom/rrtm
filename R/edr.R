@@ -25,7 +25,7 @@ edr_r <- function(pft, lai, wai, cai,
                   soil_moisture,
                   direct_sky_frac,
                   czen,
-                  wood_reflect = matrix(rep(wood_spec, length(pft)), 2101),
+                  wood_reflect = matrix(rep(wood_spec, max(pft)), 2101),
                   wavelengths = seq(400, 2500)) {
   ncohort <- length(pft)
   npft <- length(N)
@@ -61,7 +61,7 @@ edr_r <- function(pft, lai, wai, cai,
   # wavelengths
   if (nwl != NROW(wood_reflect)) wood_reflect <- wood_reflect[wli, ]
 
-  leaf_spectra <- mapply(prospect5, N, Cab, Car, Cw, Cm, SIMPLIFY = FALSE)
+  leaf_spectra <- mapply(prospect5, N, Cab, Car, 0, Cw, Cm, SIMPLIFY = FALSE)
   leaf_reflect <- Reduce(
     cbind,
     Map(function(x) x[["reflectance"]], leaf_spectra)

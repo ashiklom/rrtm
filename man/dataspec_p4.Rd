@@ -7,11 +7,11 @@
 \alias{dataspec_pd}
 \title{Specific absorption coefficients for PROSPECT model}
 \format{
-An object of class \code{matrix} with 2101 rows and 3 columns.
+An object of class \code{matrix} (inherits from \code{array}) with 2101 rows and 3 columns.
 
-An object of class \code{matrix} with 2101 rows and 5 columns.
+An object of class \code{matrix} (inherits from \code{array}) with 2101 rows and 5 columns.
 
-An object of class \code{matrix} with 2101 rows and 6 columns.
+An object of class \code{matrix} (inherits from \code{array}) with 2101 rows and 6 columns.
 }
 \usage{
 dataspec_p4
