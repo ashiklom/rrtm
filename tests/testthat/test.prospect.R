@@ -7,10 +7,10 @@ test_that("PROSPECT 4", {
 })
 
 test_that("PROSPECT 5", {
-  p5 <- do.call(cbind, prospect5(1.4, 40, 10, 0.01, 0.01))
+  p5 <- do.call(cbind, prospect5(1.4, 40, 10, 0, 0.01, 0.01))
   expect_true(all(p5 > 0))
   expect_true(all(p5 < 1))
-  p5b <- do.call(cbind, prospect5(1.4, 40, 10, 0.01, 0.01, 8))
+  p5b <- do.call(cbind, prospect5(1.4, 40, 10, 0, 0.01, 0.01))
   expect_true(all(p5b > 0))
   expect_true(all(p5b < 1))
 })
