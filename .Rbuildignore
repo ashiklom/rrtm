@@ -2,3 +2,4 @@
 ^LICENSE\.md$
 ^README\.Rmd$
 ^scratch/
+^\.github$
