@@ -48,6 +48,7 @@ liberty <- function(D, xu, thick, baseline, element,
     N1 <- 1.4891 - (0.0005 * (i - 1))
     N0 <- 1.0
     in_angle <- 59
+
     # Index of refraction
     alpha <- in_angle * pi / 180
     beta <- asin((N0 / N1) * sin(alpha))
@@ -56,28 +57,25 @@ liberty <- function(D, xu, thick, baseline, element,
 
     me <- 0
     width <- pi / 180
-    for (p in seq(1, 90)) {
-      alpha <- p * pi / 180
-      beta <- asin(N0 / N1 * sin(alpha))
-      plus <- alpha + beta
-      dif <- alpha - beta
-      refl <- 0.5 * ((sin(dif))^2 / (sin(plus))^2 + (tan(dif))^2 / (tan(plus))^2)
-      me <- me + (refl * sin(alpha) * cos(alpha) * width)
-    }
-    me <- me * 2
+    pp <- seq(1, 90)
+    alpha <- pp * pi / 180
+    beta <- asin(N0 / N1 * sin(alpha))
+    plus <- alpha + beta
+    dif <- alpha - beta
+    refl <- 0.5 * ((sin(dif))^2 / (sin(plus))^2 + (tan(dif))^2 / (tan(plus))^2)
+    me <- 2 * sum(refl * sin(alpha) * cos(alpha) * width)
 
     mi <- 0
     mint <- 0
     width <- pi / 180
     critical <- asin(N0 / N1) * 180 / pi
-    for (j in seq(1, critical)) {
-      alpha <- j * pi / 180
-      beta <- asin(N0 / N1 * sin(alpha))
-      plus <- alpha + beta
-      dif <- alpha - beta
-      refl <- 0.5 * ((sin(dif))^2 / (sin(plus))^2 + (tan(dif))^2 / (tan(plus))^2)
-      mint <- mint + refl * sin(alpha) * cos(alpha) * width
-    }
+    jj <- seq(1, critical)
+    alpha <- jj * pi / 180
+    beta <- asin(N0 / N1 * sin(alpha))
+    plus <- alpha + beta
+    dif <- alpha - beta
+    refl <- 0.5 * ((sin(dif))^2 / (sin(plus))^2 + (tan(dif))^2 / (tan(plus))^2)
+    mint <- sum(refl * sin(alpha) * cos(alpha) * width)
     mi <- (1 - sin(critical * pi / 180)^2) + 2 * mint
 
     M <- 2 * (1 - (coeff + 1) * exp(-coeff)) / coeff^2
