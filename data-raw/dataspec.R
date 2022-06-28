@@ -45,6 +45,9 @@ soil_refl <- read.table(soil_refl_file, header = FALSE)
 dry_soil <- soil_refl[, 2]
 wet_soil <- soil_refl[, 3]
 
+# Read liberty input data
+dataspec_liberty <- read.table("data-raw/liberty_raw.dat")
+
 usethis::use_data(
   dataspec_p4,
   dataspec_p5,
@@ -56,6 +59,7 @@ usethis::use_data(
   wood_spec,
   dry_soil,
   wet_soil,
+  dataspec_liberty,
   overwrite = TRUE,
   internal = TRUE
 )

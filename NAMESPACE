@@ -3,6 +3,7 @@
 export(edr_r)
 export(foursail)
 export(hapke_soil)
+export(liberty)
 export(pro4sail_4)
 export(pro4sail_5)
 export(pro4sail_d)
