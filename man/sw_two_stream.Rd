@@ -54,9 +54,6 @@ sw_two_stream(
 \item{wavelengths}{Numeric vector of wavelengths to use, in nm
 (nwl). Default is 400:2500.}
 }
-\value{
-
-}
 \description{
 R implementation of ED2 two-stream radiation model
 }

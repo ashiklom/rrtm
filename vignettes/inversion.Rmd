@@ -1,0 +1,263 @@
+---
+title: "Fitting RTMs to spectra"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Fitting RTMs to spectra}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7
+)
+```
+
+# Setup
+
+```{r setup}
+library(rrtm)
+```
+
+Load some test data.
+These data are from my curated version of leaf spectra from the NASA Forest Functional Types (FFT) 2008 field campaign.
+
+```{r testdata}
+obs <- read.csv(
+  "https://raw.githubusercontent.com/ashiklom/spectra_db/master/nasa_fft/spectra/nasa_fft%7CAK06_ABBA_M2%7C2009.csvy",
+  comment.char = "#",
+  col.names = c("wavelength", "observed")
+)
+par(mar = c(4, 4, 1, 1))
+plot(observed ~ wavelength, type = "l", data = obs)
+```
+
+Interpolate the data to the PROSPECT wavelengths.
+Technically, we should interpolate _PROSPECT_ to the observation using the sensor's spectral response function, but this will do for now.
+
+```{r}
+prospect_wl <- seq(400, 2500, 1)
+obs_prospect <- approx(obs[["wavelength"]], obs[["observed"]], prospect_wl)[["y"]]
+```
+
+# Least-squares optimization
+
+This uses R's builtin `optim` function to fit PROSPECT.
+The `optim` function takes a function as an argument and tries to minimize that function's value.
+In this case, the specific thing we are minimizing is the total absolute (squared) difference between PROSPECT-D and the observation.
+Note that any "bad" spectra (either errors in running PROSPECT, or cases where PROSPECT output is physically impossible, e.g., less than zero) are assigned a huge (1e9) value for the optimizer; since the optimizer is trying to minimize the value of `optfun`, it will know to avoid parameter combinations resulting in these bad values. 
+
+```{r optfun}
+optfun <- function(params) {
+  N <- params[1]
+  Cab <- params[2]
+  Car <- params[3]
+  Cbrown <- params[4]
+  Canth <- params[5]
+  Cw <- params[6]
+  Cm <- params[7]
+  # Convert errors in PROSPECT execution to an extremely bad value (1e9)
+  tryCatch({
+    spec <- prospectd(N, Cab, Car, Cbrown, Canth, Cw, Cm,
+                      e1fun = gsl::expint_E1)
+    refl <- spec[["reflectance"]]
+    # Convert illegal values in reflectance (NA or less than 0) to a bad value
+    if (any(is.na(refl) | refl < 0)) return(1e9)
+    sum((obs_prospect - refl)^2)
+  }, error = function(e) {
+    message("Hit error: ", e)
+    return(1e9)
+  })
+}
+```
+
+Now, we actually perform the optimization.
+
+```{r optim}
+# Initial guess
+guess <- c(N = 1.4, Cab = 40, Car = 10, Cbrown = 0,
+           Canth = 10, Cw = 0.01, Cm = 0.01)
+fit <- optim(guess, optfun)
+```
+
+Finally, check the results.
+
+```{r check_optim}
+pred_guess <- do.call(prospectd, as.list(guess))[["reflectance"]]
+pred <- do.call(prospectd, as.list(fit[["par"]]))[["reflectance"]]
+
+par(mar = c(4, 4, 1, 1))
+plot(prospect_wl, obs_prospect, type = "l",
+     xlab = "Wavelength (nm)",
+     ylab = "Reflectance (0-1)")
+lines(prospect_wl, pred_guess, lty = "dashed", col = "red")
+lines(prospect_wl, pred, col = "green4")
+legend(
+  "topright",
+  c("observed", "initial guess", "fit"),
+  lty = c("solid", "dashed", "solid"),
+  col = c("black", "red", "green4")
+)
+```
+
+It's not a great fit, but significantly better than the initial guess.
+
+# Bayesian optimization
+
+```{r bayes_setup}
+library(BayesianTools)
+library(distributions3)
+```
+
+Define prior distributions.
+
+```{r priors}
+# Define prior distribution objects
+Ndm1 <- Exponential(1)  # Note: Prior is on N - 1
+Cabd <- LogNormal(log(40), 0.8)
+Card <- LogNormal(log(10), 0.8)
+Cbrownd <- Exponential(0.2)
+Canthd <- LogNormal(log(10), 0.8)
+Cwd <- LogNormal(-4.456, 1.216)
+Cmd <- LogNormal(-5.15, 1.328)
+rsdd <- Exponential(10)  # Additional prior on residual standard deviation
+
+prior <- createPrior(
+  density = function(x) {
+    # Note: Truncated at zero
+    log_pdf(Ndm1, x[1] - 1) +
+      log_pdf(Cabd, x[2]) +
+      log_pdf(Card, x[3]) +
+      log_pdf(Cbrownd, x[4]) +
+      log_pdf(Canthd, x[5]) +
+      log_pdf(Cwd, x[6]) +
+      log_pdf(Cmd, x[7]) +
+      log_pdf(rsdd, x[8])
+  },
+  sampler = function(n = 1) {
+    N <- random(Ndm1, n) + 1
+    Cab <- random(Cabd, n)
+    Car <- random(Card, n)
+    Cbrown <- random(Cbrownd, n)
+    Canth <- random(Canthd, n)
+    Cw <- random(Cwd, n)
+    Cm <- random(Cmd, n)
+    rsd <- random(rsdd, n)
+    cbind(N, Cab, Car, Cbrown, Canth, Cw, Cm, rsd)
+  }
+)
+```
+
+A good way to explore what these distributions actually look like is to plot them.
+
+```{r dist_explore}
+par(mar = c(4, 4, 1, 1))
+curve(pmf(Cabd, x), 0, 100, xlab = "Cab", ylab = "Probability density")
+```
+
+Next, define likelihood.
+This is almost identical to `optfun` except that we replace the least-squares sum with a normal likelihood (i.e., we assume the error between PROSPECT and the spectra is normally distributed).
+Also, because we are trying to maximize the posterior probability, our "bad" values are now very _small_ (1e-9).
+
+```{r likelihood}
+loglike <- function(params) {
+  N <- params[1]
+  Cab <- params[2]
+  Car <- params[3]
+  Cbrown <- params[4]
+  Canth <- params[5]
+  Cw <- params[6]
+  Cm <- params[7]
+  rsd <- params[8]
+  # Convert errors in PROSPECT execution to an extremely bad value (-1e9)
+  tryCatch({
+    spec <- prospectd(N, Cab, Car, Cbrown, Canth, Cw, Cm,
+                      e1fun = gsl::expint_E1)
+    refl <- spec[["reflectance"]]
+    # Convert illegal values in reflectance (NA or less than 0) to a bad value
+    if (any(is.na(refl) | refl < 0)) return(-1e9)
+    sum(dnorm(refl, obs_prospect, rsd, log = TRUE))
+  }, error = function(e) {
+    message("Hit error: ", e)
+    return(-1e9)
+  })
+}
+```
+
+Now, we perform the MCMC fit.
+(Note)
+
+```{r mcmc}
+parnames <- c("N", "Cab", "Car", "Cbrown", "Canth", "Cw", "Cm", "rsd")
+setup <- createBayesianSetup(
+  likelihood = loglike,
+  prior = prior,
+  names = parnames
+)
+# Note: Cache output here, for faster rendering on repeat invocations...
+cachefile <- "cache/vignette-mcmc.rds"
+if (file.exists(cachefile)) {
+  samps <- readRDS(cachefile)
+} else {
+  samps <- runMCMC(setup, settings = list(iterations = 50000, message = FALSE))
+  dir.create(dirname(cachefile), showWarnings = FALSE)
+  saveRDS(samps, cachefile)
+}
+```
+
+Inspect the complete trace plot.
+
+```{r trace_plot, dev.args = list(pointsize = 8)}
+par(mar = c(4, 4, 2, 1))
+for (param in parnames) {
+  tracePlot(samps, whichParameters = param)
+  title(param)
+}
+```
+
+Zoom in on a burned-in region.
+
+```{r trace_plot_burn, dev.args = list(pointsize = 8)}
+burn <- 9000
+par(mar = c(4, 4, 2, 1))
+for (param in parnames) {
+  tracePlot(samps, whichParameters = param, start = burn)
+  title(param)
+}
+```
+
+Summarize the results.
+
+```{r bayes_results}
+fitted <- getSample(samps, start = 9000)
+colnames(fitted) <- parnames
+confmat <- matrix(NA_real_, nrow(fitted), length(prospect_wl))
+predmat <- confmat
+for (i in seq_len(nrow(fitted))) {
+  # Confidence interval -- only uncertainty in parameters
+  confmat[i,] <- do.call(prospectd, as.list(fitted[i, 1:7]))[["reflectance"]]
+  # Prediction interval -- also uncertainty in model
+  predmat[i,] <- rnorm(length(prospect_wl), confmat[i,], fitted[i, "rsd"])
+}
+pred_mean <- colMeans(predmat, na.rm = TRUE)
+pred_lo <- apply(predmat, 2, quantile, 0.05, na.rm = TRUE)
+pred_hi <- apply(predmat, 2, quantile, 0.95, na.rm = TRUE)
+```
+
+Visualize the fit.
+
+```{r}
+ribbon <- function(x, ymin, ymax, ...) {
+  xin <- c(x, rev(x))
+  yin <- c(ymin, rev(ymax))
+  polygon(xin, yin, ...)
+}
+par(mar = c(4, 4, 1, 1))
+plot(0, 0, type = "n", xlim = range(prospect_wl), ylim = c(0, max(pred_hi)),
+     xlab = "Wavelength (nm)", ylab = "Reflectance (0-1)")
+ribbon(prospect_wl, pred_lo, pred_hi, col = "gray", lty = 0)
+lines(prospect_wl, obs_prospect, col = "black")
+lines(prospect_wl, pred_mean, col = "green4")
+```

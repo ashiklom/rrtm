@@ -59,9 +59,6 @@ direct (0-1; 0 = all diffuse radiation)}
 \item{wavelengths}{Numeric vector of wavelengths to use, in nm
 (nwl). Default is 400:2500.}
 }
-\value{
-
-}
 \description{
 Wrapper around \link{sw_two_stream} that also calls PROSPECT 5 (see
 \code{\link[PEcAnRTM:prospect]{PEcAnRTM::prospect()}}) to generate the leaf reflectance and
