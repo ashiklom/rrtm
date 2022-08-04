@@ -47,7 +47,7 @@ liberty <- function(D, xu, thick, baseline, element,
 
   nwl <- 420
   transR <- numeric(nwl)
-  reflR <- numeric(nwl);
+  reflR <- numeric(nwl)
   wavelength <- numeric(nwl)
   RR <- numeric(nwl)
 
@@ -68,8 +68,8 @@ liberty <- function(D, xu, thick, baseline, element,
     # Index of refraction
     alpha <- in_angle * pi / 180
     beta <- asin((N0 / N1) * sin(alpha))
-    para_r <- (tan(alpha - beta)) / (tan(alpha + beta))
-    vert_r <- -(sin(alpha - beta)) / (sin(alpha + beta))
+    # para_r <- (tan(alpha - beta)) / (tan(alpha + beta))
+    # vert_r <- -(sin(alpha - beta)) / (sin(alpha + beta))
 
     me <- 0
     width <- pi / 180
@@ -95,11 +95,11 @@ liberty <- function(D, xu, thick, baseline, element,
     mi <- (1 - sin(critical * pi / 180)^2) + 2 * mint
 
     M <- 2 * (1 - (coeff + 1) * exp(-coeff)) / coeff^2
-    T <- ((1 - mi) * M) / (1 - (mi * M))
-    x <- xu / (1 - (1 - 2 * xu) * T)
-    a <- me*T + x*T - me - T - x*me*T
-    b <- 1 + x*me*T - 2*x^2*me^2*T
-    c <- 2*me*x^2*T - x*T - 2*x*me
+    Tt <- ((1 - mi) * M) / (1 - (mi * M))
+    x <- xu / (1 - (1 - 2 * xu) * Tt)
+    a <- me*Tt + x*Tt - me - Tt - x*me*Tt
+    b <- 1 + x*me*Tt - 2*x^2*me^2*Tt
+    c <- 2*me*x^2*Tt - x*Tt - 2*x*me
     R <- 0.5
     # Initial guess...
     for (iterations in seq(1, 50)) {
@@ -109,7 +109,7 @@ liberty <- function(D, xu, thick, baseline, element,
 
     # The next bit works out transmittance based upon Benford...
     # setting up unchanging parameters...
-    rb <- (2 * x * me) + (x * T) - (x * T * 2 * x * me)
+    rb <- (2 * x * me) + (x * Tt) - (x * Tt * 2 * x * me)
     tb <- sqrt(((R - rb) * (1 - (R * rb))) / R)
     whole <- fix(thick)
     fraction <- thick - whole
