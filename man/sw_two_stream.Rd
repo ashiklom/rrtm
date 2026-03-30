@@ -55,7 +55,13 @@ sw_two_stream(
 (nwl). Default is 400:2500.}
 }
 \value{
-
+list of
+\code{albedo} (overall albedo; nwl),
+\code{up} (upwelling radiation profile; nwl x ncoh + 1),
+\code{down} (downwelling radiation profile; nwl x ncoh + 1),
+\code{light_level} (total light level by cohort; nwl x ncoh),
+\code{light_beam_level} (direct light level by cohort; nwl x ncoh), and
+\code{light_diff_level} (diffuse light level by cohort; nwl x ncoh)
 }
 \description{
 R implementation of ED2 two-stream radiation model

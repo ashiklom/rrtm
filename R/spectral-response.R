@@ -17,7 +17,7 @@ names(sensor_proper) <- sensor_list
 #' Convolution of spectra to sensor RSR
 #'
 #' @param spec Full (1 nm) spectrum (vector)
-#' @param sensor Sensor name (string). See sensor.list
+#' @param sensor Sensor name (string). See `sensor_list`.
 #' @export
 spectral_response <- function(spec, sensor) {
   sensor <- tolower(sensor)
@@ -28,4 +28,4 @@ spectral_response <- function(spec, sensor) {
   rsr <- sensor_rsr[[sensor]]
   m <- spec[rsr[, "index"]] * rsr[, -1]
   .colSums(m, nrow(m), ncol(m))
-} # spectral.response
+} # spectral_response

@@ -1,7 +1,7 @@
 #' Simple model of soil reflectance as a function of soil moisture
 #'
-#' Just the average of [wet_soil] and [dry_soil], weighted by
-#' `soil_moisture`. `soil_moisture` of 0 means fully dry soil, and
+#' Just the average of the internal `wet_soil` and `dry_soil` spectra,
+#' weighted by `soil_moisture`. `soil_moisture` of 0 means fully dry soil, and
 #'
 #' @param soil_moisture Soil moisture index (0-1; 0 = completely dry,
 #'   1 = completely wet)

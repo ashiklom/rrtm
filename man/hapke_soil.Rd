@@ -14,8 +14,8 @@ hapke_soil(soil_moisture)
 Spectrum of soil reflectance (400:2500 nm)
 }
 \description{
-Just the average of \link{wet_soil} and \link{dry_soil}, weighted by
-\code{soil_moisture}. \code{soil_moisture} of 0 means fully dry soil, and
+Just the average of the internal \code{wet_soil} and \code{dry_soil} spectra,
+weighted by \code{soil_moisture}. \code{soil_moisture} of 0 means fully dry soil, and
 }
 \author{
 Alexey Shiklomanov

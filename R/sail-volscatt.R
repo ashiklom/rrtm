@@ -101,7 +101,7 @@ volscatt <- function(solar_zenith, instrument_zenith, azimuth, leaf_angle) {
 #' @param instrument_zenith Instrument zenith angle (degrees)
 #' @param azimuth Sun-instrument azimuth angle (degrees)
 #' @param leaf_angle Leaf angle (degrees)
-#' @return
+#' @return A list with `chi_s`, `chi_o`, `frho`, and `ftau`.
 #' @author Alexey Shiklomanov
 volscatt_scalar <- function(solar_zenith, instrument_zenith, azimuth, leaf_angle) {
   d2r <- pi / 180

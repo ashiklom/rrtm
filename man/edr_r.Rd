@@ -54,17 +54,24 @@ direct (0-1; 0 = all diffuse radiation)}
 
 \item{czen}{Cosine of angle of incidence (\code{cosaio})}
 
-\item{wood_reflect}{Wood reflectance spectrum. Default \code{\link[=wood_spectrum]{wood_spectrum()}}}
+\item{wood_reflect}{Wood reflectance spectrum. Defaults to the internal
+\code{wood_spec} dataset.}
 
 \item{wavelengths}{Numeric vector of wavelengths to use, in nm
 (nwl). Default is 400:2500.}
 }
 \value{
-
+list of
+\code{albedo} (overall albedo; nwl),
+\code{up} (upwelling radiation profile; nwl x ncoh + 1),
+\code{down} (downwelling radiation profile; nwl x ncoh + 1),
+\code{light_level} (total light level by cohort; nwl x ncoh),
+\code{light_beam_level} (direct light level by cohort; nwl x ncoh), and
+\code{light_diff_level} (diffuse light level by cohort; nwl x ncoh)
 }
 \description{
-Wrapper around \link{sw_two_stream} that also calls PROSPECT 5 (see
-\code{\link[PEcAnRTM:prospect]{PEcAnRTM::prospect()}}) to generate the leaf reflectance and
+Wrapper around \code{\link[=sw_two_stream]{sw_two_stream()}} that also calls PROSPECT 5 (see
+\code{\link[=prospect]{prospect()}}) to generate the leaf reflectance and
 transmittance spectra, \code{\link[=hapke_soil]{hapke_soil()}} to generate the soil spectrum
 given \code{soil_moisture}, and a "flat" incident solar spectra for
 direct and diffuse light based on \code{direct_sky_frac}.

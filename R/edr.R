@@ -1,7 +1,7 @@
 #' Run ED two-stream radiative transfer model
 #'
-#' Wrapper around [sw_two_stream] that also calls PROSPECT 5 (see
-#' [PEcAnRTM::prospect()]) to generate the leaf reflectance and
+#' Wrapper around [sw_two_stream()] that also calls PROSPECT 5 (see
+#' [prospect()]) to generate the leaf reflectance and
 #' transmittance spectra, [hapke_soil()] to generate the soil spectrum
 #' given `soil_moisture`, and a "flat" incident solar spectra for
 #' direct and diffuse light based on `direct_sky_frac`.
@@ -15,18 +15,19 @@
 #' @param Cm PROSPECT 5 leaf dry matter content (g cm-2; npft)
 #' @param direct_sky_frac Fraction of incident solar radiation that is
 #'   direct (0-1; 0 = all diffuse radiation)
-#' @param wood_reflect Wood reflectance spectrum. Default [wood_spectrum()]
-#' @return
+#' @param wood_reflect Wood reflectance spectrum. Defaults to the internal
+#'   `wood_spec` dataset.
 #' @author Alexey Shiklomanov
 #' @export
-edr_r <- function(pft, lai, wai, cai,
-                  N, Cab, Car, Cw, Cm,
-                  orient_factor, clumping_factor,
-                  soil_moisture,
-                  direct_sky_frac,
-                  czen,
-                  wood_reflect = matrix(rep(wood_spec, max(pft)), 2101),
-                  wavelengths = seq(400, 2500)) {
+edr_r <- function(
+  pft, lai, wai, cai,
+  N, Cab, Car, Cw, Cm, # nolint
+  orient_factor, clumping_factor,
+  soil_moisture, direct_sky_frac,
+  czen,
+  wood_reflect = matrix(rep(wood_spec, max(pft)), 2101),
+  wavelengths = seq(400, 2500)
+) {
   ncohort <- length(pft)
   npft <- length(N)
   nwl <- length(wavelengths)
@@ -65,11 +66,11 @@ edr_r <- function(pft, lai, wai, cai,
   leaf_reflect <- Reduce(
     cbind,
     Map(function(x) x[["reflectance"]], leaf_spectra)
-  )[wli,]
+  )[wli, ]
   leaf_trans <- Reduce(
     cbind,
     Map(function(x) x[["transmittance"]], leaf_spectra)
-  )[wli,]
+  )[wli, ]
 
   # Soil reflectance as a function of soil moisture
   soil_reflect <- hapke_soil(soil_moisture)[wli]
@@ -119,20 +120,24 @@ edr_r <- function(pft, lai, wai, cai,
 #' @param down0_sky Normalized direct solar spectrum (nwl)
 #' @param wavelengths Numeric vector of wavelengths to use, in nm
 #'   (nwl). Default is 400:2500.
-#' @return
+#' @return list of
+#'   `albedo` (overall albedo; nwl),
+#'   `up` (upwelling radiation profile; nwl x ncoh + 1),
+#'   `down` (downwelling radiation profile; nwl x ncoh + 1),
+#'   `light_level` (total light level by cohort; nwl x ncoh),
+#'   `light_beam_level` (direct light level by cohort; nwl x ncoh), and
+#'   `light_diff_level` (diffuse light level by cohort; nwl x ncoh)
 #' @author Alexey Shiklomanov
 #' @useDynLib rrtm
 #' @export
-sw_two_stream <- function(czen,
-                          iota_g,
-                          pft,
-                          lai, wai, cai,
-                          orient_factor, clumping_factor,
-                          leaf_reflect, leaf_trans,
-                          wood_reflect, wood_trans,
-                          down_sky, down0_sky,
-                          wavelengths = seq(400, 2500)
-                          ) {
+sw_two_stream <- function(
+  czen, iota_g, pft, lai, wai, cai,
+  orient_factor, clumping_factor,
+  leaf_reflect, leaf_trans,
+  wood_reflect, wood_trans,
+  down_sky, down0_sky,
+  wavelengths = seq(400, 2500)
+) {
 
   # Sanity checks
   nwl <- length(wavelengths)
@@ -183,10 +188,10 @@ sw_two_stream <- function(czen,
   wood_scatter <- wood_reflect + wood_trans
   leaf_backscatter <- (leaf_scatter +
                          0.25 * (leaf_reflect - leaf_trans) *
-                         (1 + orient_factor) ^ 2) / (2 * leaf_scatter)
+                           (1 + orient_factor) ^ 2) / (2 * leaf_scatter)
   wood_backscatter <- (wood_scatter +
                          0.25 * (wood_reflect - wood_trans) *
-                         (1 + orient_factor) ^ 2) / (2 * wood_scatter)
+                           (1 + orient_factor) ^ 2) / (2 * wood_scatter)
   phi1 <- 0.5 - orient_factor * (0.633 + 0.33 * orient_factor)
   phi2 <- 0.877 * (1 - 2 * phi1)
   mu_bar <- (1 - phi1 * log(1 + phi2 / phi1) / phi2) / phi2
@@ -307,7 +312,7 @@ sw_two_stream <- function(czen,
   # Bottom (1) and top boundary conditions
   mmat[1, 1, ] <- (gamm_minus[, 1] - iota_g * gamm_plus[, 1]) * expl_minus[, 1]
   mmat[1, 2, ] <- (gamm_plus[, 1] - iota_g * gamm_minus[, 1]) * expl_plus[, 1]
-  mmat[nsiz, nsiz-1, ] <- gamm_plus[, z]
+  mmat[nsiz, nsiz - 1, ] <- gamm_plus[, z]
   mmat[nsiz, nsiz, ] <- gamm_minus[, z]
   yvec[1, ] <- iota_g * down0[, 1] - (upsilon[, 1] - iota_g * delta[, 1]) * expm0_minus[1]
   yvec[nsiz, ] <- down_sky - delta[, z]
