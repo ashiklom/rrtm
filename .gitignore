@@ -1,1 +1,14 @@
-inst/doc
+# MacOSX chaff
+.DS_Store
+*.DS_*
+*.DS
+
+# History files
+.Rhistory
+.Rapp.history
+
+# Session Data files
+.RData
+
+# User-specific files
+.Ruserdata

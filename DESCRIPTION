@@ -11,7 +11,7 @@ License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.0
+RoxygenNote: 7.3.3
 Imports: 
     Rcpp (>= 1.0.6),
     RcppArmadillo
@@ -20,7 +20,7 @@ Suggests:
     rmarkdown,
     testthat
 Depends: 
-    R (>= 2.10)
+    R (>= 3.5)
 LinkingTo: 
     Rcpp,
     RcppArmadillo

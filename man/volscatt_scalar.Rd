@@ -16,6 +16,9 @@ volscatt_scalar(solar_zenith, instrument_zenith, azimuth, leaf_angle)
 
 \item{leaf_angle}{Leaf angle (degrees)}
 }
+\value{
+A list with \code{chi_s}, \code{chi_o}, \code{frho}, and \code{ftau}.
+}
 \description{
 Original volscatt implementation, based on SAIL Fortran code. Exists for
 testing of faster vectorized version.
