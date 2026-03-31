@@ -11,6 +11,7 @@
 #' @return Matrix of reflectance and transmittance values
 #' @author Alexey Shiklomanov
 #' @rdname prospect
+#' @aliases prospect
 #' @export
 prospect4 <- function(N, Cab, Cw, Cm, ...) {
   cc <- rbind(Cab, Cw, Cm) / N

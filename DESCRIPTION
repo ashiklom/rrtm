@@ -16,6 +16,9 @@ Imports:
     Rcpp (>= 1.0.6),
     RcppArmadillo
 Suggests:
+    BayesianTools,
+    distributions3,
+    gsl,
     knitr,
     rmarkdown,
     testthat

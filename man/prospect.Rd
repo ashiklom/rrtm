@@ -2,6 +2,7 @@
 % Please edit documentation in R/prospect.R
 \name{prospect4}
 \alias{prospect4}
+\alias{prospect}
 \alias{prospect5}
 \alias{prospectd}
 \title{PROSPECT leaf spectra model}
