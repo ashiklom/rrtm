@@ -150,6 +150,8 @@ tav_abs <- function(theta, refractive) {
 #' Swami and Ohija approximation to the Exponential Integral. This is very
 #' simple, but differences with more precise (but expensive) approaches are
 #' almost completely washed out by PROSPECT math.
+#'
+#' @param x numeric vector
 e1_approx <- function(x) {
   A <- log((0.56146 / x + 0.65) * (1 + x))
   B <- x^4 * exp(7.7 * x) * (2 + x)^3.7

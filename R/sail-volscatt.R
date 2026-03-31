@@ -192,4 +192,6 @@ volscatt_scalar <- function(solar_zenith, instrument_zenith, azimuth, leaf_angle
 }
 
 #' "Vectorized" version of scalar code
+#' @inheritParams volscatt_scalar
+#' @param leaf_angle Vector of leaf angles (degrees)
 volscatt_scalar_v <- Vectorize(volscatt_scalar, "leaf_angle")

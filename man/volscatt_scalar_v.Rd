@@ -6,6 +6,15 @@
 \usage{
 volscatt_scalar_v(solar_zenith, instrument_zenith, azimuth, leaf_angle)
 }
+\arguments{
+\item{solar_zenith}{Solar zenith angle (degrees)}
+
+\item{instrument_zenith}{Instrument zenith angle (degrees)}
+
+\item{azimuth}{Sun-instrument azimuth angle (degrees)}
+
+\item{leaf_angle}{Vector of leaf angles (degrees)}
+}
 \description{
 "Vectorized" version of scalar code
 }

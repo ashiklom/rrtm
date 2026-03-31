@@ -8,6 +8,9 @@ almost completely washed out by PROSPECT math.}
 \usage{
 e1_approx(x)
 }
+\arguments{
+\item{x}{numeric vector}
+}
 \description{
 Swami and Ohija approximation to the Exponential Integral. This is very
 simple, but differences with more precise (but expensive) approaches are
