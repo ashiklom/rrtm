@@ -381,3 +381,7 @@ sw_two_stream <- function(
 }
 
 vec2mat <- function(x, n) matrix(rep(x, n), nrow = n, byrow = TRUE)
+
+# This silences the R CMD CHECK note about RcppArmadillo being unused
+#' @importFrom RcppArmadillo RcppArmadillo.package.skeleton
+NULL

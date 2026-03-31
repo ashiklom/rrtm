@@ -3,7 +3,7 @@
 \docType{data}
 \name{sensor_list}
 \alias{sensor_list}
-\title{Sensor spectral response functions}
+\title{List of sensors with available spectral response functions}
 \format{
 An object of class \code{character} of length 12.
 }
@@ -11,6 +11,6 @@ An object of class \code{character} of length 12.
 sensor_list
 }
 \description{
-Sensor spectral response functions
+List of sensors with available spectral response functions
 }
 \keyword{datasets}

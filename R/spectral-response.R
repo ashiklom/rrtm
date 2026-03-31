@@ -1,18 +1,30 @@
-#' Sensor spectral response functions
+#' List of sensors with available spectral response functions
 #'
 #' @export
-sensor_list <- c("identity", "aviris.ng", "aviris.classic",
-                 "hyperion", "chris.proba", "landsat5", "landsat7",
-                 "landsat8", "modis", "viirs", "avhrr", "licor")
+sensor_list <- c(
+  "Native" = "identity",
+  "AVIRIS NG" = "aviris.ng",
+  "AVIRIS Classic" = "aviris.classic",
+  "Hyperion" = "hyperion",
+  "CHRIS-Proba" = "chris.proba",
+  "Landsat 5" = "landsat5",
+  "Landsat 7" = "landsat7",
+  "Landsat 8" = "landsat8",
+  "MODIS" = "modis",
+  "VIIRS" = "viirs",
+  "AVHRR" = "avhrr",
+  "LiCor 6400 chamber" = "licor"
+)
 
-#' Sensor list with proper names
+#' Spectral response functions for various sensors
 #'
-#' @export
-sensor_proper <- c("Native", "AVIRIS NG", "AVIRIS Classic",
-                   "Hyperion", "CHRIS-Proba", "Landsat 5", "Landsat 7",
-                   "Landsat 8", "MODIS", "VIIRS", "AVHRR", "LiCor 6400 chamber")
+#' @name sensor.rsr
+#' @alias sensor.rsr
+NULL
 
-names(sensor_proper) <- sensor_list
+# sensor.rsr is available via lazily-loaded `data`. This silences the relevant
+# R CMD check NOTE.
+utils::globalVariables("sensor.rsr")
 
 #' Convolution of spectra to sensor RSR
 #'
