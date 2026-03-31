@@ -11,7 +11,7 @@
 #' @param N Effective number of leaf layers (`numeric(1)`)
 #' @param talf,t12,t21 Pre-calculated quantities based on refractive index and angle
 #' @param e1fun Function to use for exponential integral. Default is e1_approx,
-#'   included here. For greater precision, use `gsl::expint_E1`.
+#'   included here. For greater precision, use [expint::expint_E1()].
 #' @return A length-2 list containing the modeled reflectance and transmittance
 #' @author Alexey Shiklomanov
 gpm <- function(k, N, talf, t12, t21, e1fun = e1_approx) {
@@ -33,7 +33,7 @@ gpm <- function(k, N, talf, t12, t21, e1fun = e1_approx) {
       "The transmissivity is on the order of <= 1e-7 ",
       "so this warning can probably be ignored.",
       "However, if you want more precise results, you can try setting ",
-      "`e1fun = gsl::expint_E1` to use a more precise approximation."
+      "`e1fun = expint::expint_E1` to use a more precise approximation."
     )
     trans[tlt0] <- 0
   }

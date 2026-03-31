@@ -19,7 +19,6 @@ sensor_list <- c(
 #' Spectral response functions for various sensors
 #'
 #' @name sensor.rsr
-#' @alias sensor.rsr
 NULL
 
 # sensor.rsr is available via lazily-loaded `data`. This silences the relevant

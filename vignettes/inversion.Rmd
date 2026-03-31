@@ -61,7 +61,7 @@ optfun <- function(params) {
   # Convert errors in PROSPECT execution to an extremely bad value (1e9)
   tryCatch({
     spec <- prospectd(N, Cab, Car, Cbrown, Canth, Cw, Cm,
-                      e1fun = gsl::expint_E1)
+                      e1fun = expint::expint_E1)
     refl <- spec[["reflectance"]]
     # Convert illegal values in reflectance (NA or less than 0) to a bad value
     if (any(is.na(refl) | refl < 0)) return(1e9)
@@ -174,7 +174,7 @@ loglike <- function(params) {
   # Convert errors in PROSPECT execution to an extremely bad value (-1e9)
   tryCatch({
     spec <- prospectd(N, Cab, Car, Cbrown, Canth, Cw, Cm,
-                      e1fun = gsl::expint_E1)
+                      e1fun = expint::expint_E1)
     refl <- spec[["reflectance"]]
     # Convert illegal values in reflectance (NA or less than 0) to a bad value
     if (any(is.na(refl) | refl < 0)) return(-1e9)

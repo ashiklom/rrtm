@@ -14,7 +14,7 @@ gpm(k, N, talf, t12, t21, e1fun = e1_approx)
 \item{talf, t12, t21}{Pre-calculated quantities based on refractive index and angle}
 
 \item{e1fun}{Function to use for exponential integral. Default is e1_approx,
-included here. For greater precision, use \code{gsl::expint_E1}.}
+included here. For greater precision, use \code{\link[expint:expint]{expint::expint_E1()}}.}
 }
 \value{
 A length-2 list containing the modeled reflectance and transmittance
