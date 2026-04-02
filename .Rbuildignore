@@ -2,6 +2,7 @@
 ^extdata/
 ^LICENSE\.md$
 ^README\.Rmd$
+^misc/
 ^scratch/
 ^\.github$
 ^.lintr$
