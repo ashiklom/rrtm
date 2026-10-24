@@ -32,7 +32,7 @@ p45_t12 <- tav_abs(90, refractive_p45)
 p45_t21 <- p45_t12 / (refractive_p45 ^ 2)
 pd_talf <- tav_abs(40, refractive_pd)
 pd_t12 <- tav_abs(90, refractive_pd)
-pd_t21 <- p45_t12 / (refractive_pd ^ 2)
+pd_t21 <- pd_t12 / (refractive_pd ^ 2)
 
 # Read wood reflectance
 wood_spec_file <- file.path("extdata", "wood-reflect.dat")
