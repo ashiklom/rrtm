@@ -2,9 +2,22 @@
 % Please edit documentation in R/liberty.R
 \name{liberty}
 \alias{liberty}
+\alias{liberty_dawson}
 \title{LIBERTY model}
 \usage{
 liberty(
+  D,
+  xu,
+  thick,
+  baseline,
+  element,
+  c_factor,
+  w_factor,
+  l_factor,
+  p_factor
+)
+
+liberty_dawson(
   D,
   xu,
   thick,
@@ -44,12 +57,30 @@ content (mg m-2). Typical value 40 (10-80).}
 }
 \value{
 Length 4 list containing modeled reflectance, transmittance,
-wavelengths, and R (?).
+wavelengths, and infinite reflectance (\code{RR}).
 }
 \description{
-Leaf radiative transfer model designed for conifer needles.
+Leaf radiative transfer model designed for conifer needles (Dawson et al.
+1998).
 }
 \details{
+\code{liberty()} and \code{liberty_dawson()} differ only in the equation for the
+infinite reflectance R (Dawson et al. Eq. 16). \code{liberty_dawson()} uses Eq. 16
+as published. Eq. 16 is meant to be the closed form of the series in Eq. 15,
+but it places the term \verb{2 x me} over the common denominator without
+multiplying it by that denominator. The correct sum is
+
+\verb{R = 2 x me + x (1 - 2 x me) tau (1 - me R) / ((1 - me R) - (1 - x)(1 - me) tau R)},
+
+which \code{liberty()} uses. The series of Eq. 15 describes a surface layer of
+cells that loses light only by absorption, so R always lies in [0, 1] and
+tends to 1 as absorption vanishes. Eq. 16 behaves as if the layer returned
+more light than it received (\code{me (1 + me) / 2} more at zero absorption): for
+strong scattering (large \code{xu}) and weak absorption it has no real solution,
+and \code{liberty_dawson()} diverges. Everything else is shared, and both use the
+internal reflectance of Eq. 2 for light leaving the cell (earlier versions of
+this package used the reflectance for light entering it).
+
 Note that these coefficients are based on the original values from Dawson et
 al. (1998). Improved specific absorption coefficients are available from
 later work by Di Vittorio (2009).
