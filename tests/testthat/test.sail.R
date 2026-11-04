@@ -47,3 +47,23 @@ test_that("PRO4SAIL shortcuts work", {
     }
   }
 })
+
+test_that("4SAIL hot spot works, including exactly in the hot spot", {
+  lrt <- prospect4(1.4, 40, 0.01, 0.01)
+  rsoil <- hapke_soil(0.5)
+  run <- function(...) foursail(lrt$reflectance, lrt$transmittance, rsoil, 3, ...)
+  # Sun and sensor both at nadir: the view is exactly in the hot spot
+  no_hot <- run()
+  hot <- run(hot_spot = 0.1)
+  off <- run(hot_spot = 0.1, solar_zenith = 30)
+  for (sail in list(hot, off)) {
+    for (stream in sail) {
+      expect_true(all(is.finite(stream)))
+      expect_true(all(stream >= 0))
+      expect_true(all(stream <= 1))
+    }
+  }
+  # The hot spot only changes the bidirectional stream, and brightens it
+  expect_equal(hot[c("bhr", "dhr", "hdr")], no_hot[c("bhr", "dhr", "hdr")])
+  expect_true(all(hot$bdr > no_hot$bdr))
+})

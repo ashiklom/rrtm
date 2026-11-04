@@ -157,7 +157,7 @@ foursail <- function(leaf_refl, leaf_trans, soil_refl, LAI,
   }
   if (alf > 200) alf <- 200
   if (alf == 0) {
-    tstoo <- tss
+    tsstoo <- tss
     sumint <- (1 - tss) / (ks * LAI)
   } else {
     # Outside the hotspot
