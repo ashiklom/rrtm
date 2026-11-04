@@ -47,11 +47,34 @@ test_that("multiple spectra are returned as columns, bands as rows", {
   }
 })
 
-test_that("spectra convolution for landsat 8 works as expected", {
-  l8 <- spectral_response(spec, "landsat8")
+test_that("RSR weights are normalized: band values are weighted averages", {
+  flat <- cbind(zero = 0, one = 1, mid = 0.3)[rep(1, 2101), ]
+  for (sensor in sensors) {
+    out <- spectral_response(cbind(specs, flat), sensor)
+    expect_true(all(out >= 0 & out <= 1), info = sensor)
+    expect_equal(unname(out[, "zero"]), rep(0, nrow(out)), info = sensor)
+    expect_equal(unname(out[, "one"]), rep(1, nrow(out)), info = sensor)
+    expect_equal(unname(out[, "mid"]), rep(0.3, nrow(out)), info = sensor)
+  }
+})
 
-  expect_equal(nrow(l8), 7)
-  expect_lt(l8["L8-1-aerosol", ], l8["L8-2-blue", ])
-  expect_lt(l8["L8-2-blue", ], l8["L8-3-green", ])
-  expect_lt(l8["L8-4-red", ], l8["L8-5-nir", ])
+test_that("Landsat 8 bands match naive averages over the OLI band intervals", {
+  l8 <- spectral_response(specs, "landsat8")
+  # Nominal Landsat 8 OLI band edges (nm), bands 1-7
+  edges <- rbind(
+    aerosol = c(433, 453), blue = c(450, 515), green = c(525, 600),
+    red = c(630, 680), nir = c(845, 885), swir1 = c(1560, 1660),
+    swir2 = c(2100, 2300)
+  )
+  naive <- t(apply(edges, 1, function(e) {
+    colMeans(specs[wl >= e[1] & wl <= e[2], , drop = FALSE])
+  }))
+  expect_true(all(abs(l8 - naive) < 0.01))
+
+  # Leaf reflectance shape: low blue, higher green, low red, high NIR
+  refl <- l8[, "reflectance"]
+  expect_lt(refl[["L8-2-blue"]], refl[["L8-3-green"]])
+  expect_lt(refl[["L8-4-red"]], refl[["L8-3-green"]])
+  expect_lt(refl[["L8-3-green"]], refl[["L8-5-nir"]])
+  expect_gt(refl[["L8-5-nir"]], 0.3)
 })

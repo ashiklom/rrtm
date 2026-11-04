@@ -27,6 +27,12 @@ utils::globalVariables("sensor.rsr")
 
 #' Convolution of spectra to sensor RSR
 #'
+#' Each band value is the average of the spectrum weighted by the band's
+#' relative spectral response (RSR). The weights are normalized to sum to 1
+#' (after setting the small negative values in some published RSRs to 0), so
+#' a band value always lies within the range of the input spectrum over that
+#' band; e.g., reflectances between 0 and 1 give band values between 0 and 1.
+#'
 #' @param spec Full (1 nm, 400:2500 nm) spectrum ((column) vector, or matrix
 #'   with each spectrum in its own column). For `sensor = "identity"`, any
 #'   length is allowed.
@@ -47,5 +53,13 @@ spectral_response <- function(spec, sensor) {
     stop("`spec` must have 2101 rows (400:2500 nm), not ", nrow(spec), ".")
   }
   rsr <- sensor.rsr[[sensor]]
-  crossprod(rsr[, -1, drop = FALSE], spec[rsr[, "index"], , drop = FALSE])
+  weights <- pmax(rsr[, -1, drop = FALSE], 0)
+  weights <- sweep(weights, 2, colSums(weights), "/")
+  x <- spec[rsr[, "index"], , drop = FALSE]
+  out <- crossprod(weights, x)
+  # A weighted average lies within the range of its inputs; clamp to remove
+  # floating point overshoot (e.g. 1 + 1e-15 for a spectrum of all 1s).
+  lo <- rep(apply(x, 2, min), each = nrow(out))
+  hi <- rep(apply(x, 2, max), each = nrow(out))
+  pmin(pmax(out, lo), hi)
 } # spectral_response

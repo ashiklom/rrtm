@@ -20,5 +20,9 @@ single spectrum passed as a vector will return a matrix with nband rows and
 1 column).
 }
 \description{
-Convolution of spectra to sensor RSR
+Each band value is the average of the spectrum weighted by the band's
+relative spectral response (RSR). The weights are normalized to sum to 1
+(after setting the small negative values in some published RSRs to 0), so
+a band value always lies within the range of the input spectrum over that
+band; e.g., reflectances between 0 and 1 give band values between 0 and 1.
 }
