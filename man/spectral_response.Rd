@@ -7,16 +7,17 @@
 spectral_response(spec, sensor)
 }
 \arguments{
-\item{spec}{Full (1 nm) spectrum ((column) vector or, matrix with each
-spectrum in its own column)}
+\item{spec}{Full (1 nm, 400:2500 nm) spectrum ((column) vector, or matrix
+with each spectrum in its own column). For \code{sensor = "identity"}, any
+length is allowed.}
 
 \item{sensor}{Sensor name (string). See \code{sensor_list}.}
 }
 \value{
-A matrix of convolved spectra. Each \emph{row} is a spectrum; each column
-is the sensor band. For type stability, this \emph{always} returns a matrix (so a
-single spectrum passed as a vector will return a matrix with 1 row and nwl
-columns).
+A matrix of convolved spectra. Each \emph{column} is a spectrum; each row
+is a sensor band. For type stability, this \emph{always} returns a matrix (so a
+single spectrum passed as a vector will return a matrix with nband rows and
+1 column).
 }
 \description{
 Convolution of spectra to sensor RSR

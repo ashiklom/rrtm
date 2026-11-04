@@ -27,20 +27,25 @@ utils::globalVariables("sensor.rsr")
 
 #' Convolution of spectra to sensor RSR
 #'
-#' @param spec Full (1 nm) spectrum ((column) vector or, matrix with each
-#'  spectrum in its own column)
+#' @param spec Full (1 nm, 400:2500 nm) spectrum ((column) vector, or matrix
+#'   with each spectrum in its own column). For `sensor = "identity"`, any
+#'   length is allowed.
 #' @param sensor Sensor name (string). See `sensor_list`.
-#' @return A matrix of convolved spectra. Each *row* is a spectrum; each column
-#' is the sensor band. For type stability, this *always* returns a matrix (so a
-#' single spectrum passed as a vector will return a matrix with 1 row and nwl
-#' columns).
+#' @return A matrix of convolved spectra. Each *column* is a spectrum; each row
+#' is a sensor band. For type stability, this *always* returns a matrix (so a
+#' single spectrum passed as a vector will return a matrix with nband rows and
+#' 1 column).
 #' @export
 spectral_response <- function(spec, sensor) {
   sensor <- tolower(sensor)
   stopifnot(sensor %in% sensor_list)
+  spec <- as.matrix(spec)
   if (sensor == "identity") {
-    return(matrix(spec, nrow = nrow(spec) %||% 1))
+    return(spec)
+  }
+  if (nrow(spec) != 2101) {
+    stop("`spec` must have 2101 rows (400:2500 nm), not ", nrow(spec), ".")
   }
   rsr <- sensor.rsr[[sensor]]
-  spec[rsr[, "index"]] %*% rsr[, -1]
+  crossprod(rsr[, -1, drop = FALSE], spec[rsr[, "index"], , drop = FALSE])
 } # spectral_response
