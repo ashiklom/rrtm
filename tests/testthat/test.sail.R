@@ -38,7 +38,6 @@ test_that("PRO4SAIL shortcuts work", {
     LAI = 3, soil_moisture = 0.5
   )
   for (fun in c(pro4sail_4, pro4sail_5, pro4sail_d)) {
-    fun <- pro4sail_5
     cargs <- args[head(names(formals(fun)), -1)]
     sail <- do.call(fun, cargs)
     for (stream in sail) {
