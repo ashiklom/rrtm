@@ -1,0 +1,41 @@
+[project]
+name = "rrtm"
+version = "0.0.0.9000"
+type = "package"
+title = "Implementations of radiative transfer models in R"
+description = "Implements common leaf, canopy, and atmospheric radiative transfer models in R."
+license = "MIT + file LICENSE"
+
+[[project.authors]]
+name = "Alexey Shiklomanov"
+email = "alexey.shiklomanov@gmail.com"
+roles = [
+    "aut",
+    "cre",
+]
+
+[dependencies]
+R = ">= 3.5"
+Rcpp = ">= 1.0.6"
+RcppArmadillo = "*"
+
+[linking-dependencies]
+Rcpp = ">= 1.0.6"
+RcppArmadillo = "*"
+
+[dependency-groups.dev]
+BayesianTools = "*"
+distributions3 = "*"
+expint = "*"
+knitr = "*"
+rmarkdown = "*"
+testthat = "*"
+
+[build]
+lazy-data = true
+
+[description]
+Encoding = "UTF-8"
+Roxygen = "list(markdown = TRUE)"
+RoxygenNote = "7.3.3"
+VignetteBuilder = "knitr"
