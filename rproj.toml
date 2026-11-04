@@ -15,7 +15,7 @@ roles = [
 ]
 
 [dependencies]
-R = ">= 3.5"
+R = ">= 4.1.0"
 Rcpp = ">= 1.0.6"
 RcppArmadillo = "*"
 
