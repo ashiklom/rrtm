@@ -21,7 +21,7 @@ knitr::opts_chunk$set(
 library(rrtm)
 ```
 
-Load some test data.
+Load some test data from an old collection of datasets that I have.
 These data are from my curated version of leaf spectra from the NASA Forest Functional Types (FFT) 2008 field campaign.
 
 ```{r testdata}
@@ -30,7 +30,7 @@ obs <- read.csv(
   comment.char = "#",
   col.names = c("wavelength", "observed")
 )
-par(mar = c(4, 4, 1, 1))
+par(mar = c(4, 4, 1.5, 1.5))
 plot(observed ~ wavelength, type = "l", data = obs)
 ```
 
