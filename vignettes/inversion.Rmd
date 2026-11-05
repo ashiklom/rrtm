@@ -38,7 +38,8 @@ Interpolate the data to the PROSPECT wavelengths.
 Technically, we should interpolate _PROSPECT_ to the observation using the sensor's spectral response function, but this will do for now.
 
 ```{r}
-prospect_wl <- seq(400, 2500, 1)
+# Add a comment here.
+prospect_wl <- seq(400, 2500)
 obs_prospect <- approx(obs[["wavelength"]], obs[["observed"]], prospect_wl)[["y"]]
 ```
 
@@ -91,7 +92,7 @@ pred <- do.call(prospectd, as.list(fit[["par"]]))[["reflectance"]]
 par(mar = c(4, 4, 1, 1))
 plot(prospect_wl, obs_prospect, type = "l",
      xlab = "Wavelength (nm)",
-     ylab = "Reflectance (0-1)")
+     ylab = "Reflectance (0--1)")
 lines(prospect_wl, pred_guess, lty = "dashed", col = "red")
 lines(prospect_wl, pred, col = "green4")
 legend(
@@ -115,8 +116,8 @@ Define prior distributions.
 
 ```{r priors}
 # Define prior distribution objects
-Ndm1 <- Exponential(1)  # Note: Prior is on N - 1
-Cabd <- LogNormal(log(40), 0.8)
+Ndm1 <- Exponential(1.2)  # Note: Prior is on N - 1
+Cabd <- LogNormal(log(40), 0.9)
 Card <- LogNormal(log(10), 0.8)
 Cbrownd <- Exponential(0.2)
 Canthd <- LogNormal(log(10), 0.8)
